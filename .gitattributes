@@ -6,3 +6,6 @@
 *.jar binary
 *.png binary
 *.ico binary
+
+# Preserve upstream bytes used by the font provenance hashes on Windows.
+assets/fonts/** -text
