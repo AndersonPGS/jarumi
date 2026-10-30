@@ -1,0 +1,285 @@
+/* Pocket: a physical handset surrounded by a quiet desktop workspace. */
+:root {
+  --bg-dark: #171b1b; --bg-surface: #202625; --bg-card: #29312e;
+  --bg-card-hover: #333d37; --border-color: #414c43;
+  --primary: #c1e879; --primary-glow: rgba(193,232,121,.2);
+  --accent: #e0a66d; --violet: #9fbca6; --warning: #e9c77f;
+  --success: #c1e879; --text-main: #edf0dd; --text-muted: #aab4a5;
+}
+body { font-family: 'Space Mono', monospace; }
+button, input, select { font-family: inherit; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #d8ff91; outline-offset: 3px; }
+#titlebar { height: 48px; flex-shrink: 0; background: #202625; border-bottom: 1px solid #414c43; }
+.logo-badge { color: #e9eedc; text-shadow: none; font-family: Silkscreen, monospace; letter-spacing: 1px; }
+.brand-pixel { color: var(--primary); font-size: 22px; }
+.logo-badge .retro-tag { background: #42523a; color: #d5e8ba; border-radius: 2px; font: 9px 'Space Mono', monospace; }
+.btn-pip, .btn-pip.active { background: #c1e879; color: #182016; box-shadow: none; border-radius: 3px; }
+.btn-pip:hover { box-shadow: none; }
+.pip-controls, .volume-control-wrap { background: #29312e; border-radius: 3px; }
+#nav-tabs { background: #202625; padding: 0 18px; gap: 8px; overflow-x: auto; flex-shrink: 0; }
+.nav-tab { white-space: nowrap; min-height: 48px; padding: 10px 14px; font-size: 11px; text-shadow: none !important; }
+.nav-tab.active { color: var(--primary); border-color: var(--primary); }
+.tab-badge { border-radius: 2px; }
+#app-container { background: #171b1b; }
+#view-player { background: radial-gradient(ellipse at 50% 35%, #303b33, #171b1b 72%); padding: 14px 20px; gap: 12px; }
+.handset { flex: 1 1 auto; min-height: 0; width: min(100%, 390px); display: flex; flex-direction: column; align-items: center; padding: 10px 20px 12px; background: linear-gradient(90deg,#59645a,#39433d 4%,#48554b 50%,#343e38 96%,#667166); border: 2px solid #788579; border-radius: 25px 25px 34px 34px; box-shadow: 0 16px 36px #0008, inset 0 0 0 3px #303a34; }
+.handset-top { width: 100%; flex: 0 0 24px; display: flex; align-items: center; justify-content: space-between; color: #d4decb; font: 9px Silkscreen, monospace; letter-spacing: 1px; }
+.handset-top b { color: #c1e879; }
+.handset-speaker { width: 48px; height: 5px; border-radius: 6px; background: repeating-linear-gradient(90deg,#171d1a 0 3px,#59665c 3px 5px); }
+.handset-mark { color: #b6d67b; }
+#game-viewport-container { width: 100%; padding: 8px; background: #202a24; border: 3px solid #202722; border-radius: 7px; box-shadow: inset 0 0 0 2px #657364; }
+#game-frame-wrap { border: 1px solid #8b9a7c; border-radius: 1px; box-shadow: 0 0 0 3px #131b16; }
+.keypad-drawer, .keypad-drawer.open { flex: 0 0 auto; width: 100%; max-width: none; padding: 8px 0 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+.keypad-drawer:not(.open) { display: none; }
+.phone-keypad { width: min(100%, 250px); gap: 3px; }
+.key-dpad-center { grid-template-columns: repeat(3, 27px); grid-template-rows: repeat(3, 18px); gap: 1px; background: #263129; border-color: #778577; border-radius: 12px; padding: 3px; }
+.key-soft, .dpad-btn, .key-num, .key-call, .key-end { background: #27332c; border: 1px solid #738375; color: #edf3e5; box-shadow: inset 0 1px #ffffff20, 0 2px #1d2821; border-radius: 4px; }
+.key-soft { width: 57px; height: 26px; color: #c1e879; }
+.dpad-center { color: #c1e879; background: #49594b; }
+.key-call, .key-end { height: 18px; }
+.keypad-grid-num { gap: 3px; }
+.key-num { min-height: 0; height: 26px; }
+.key-num .digit { font-size: 13px; }
+.key-num .subletters { font-size: 7px; color: #a9b9a5; }
+.key-soft:active, .dpad-btn:active, .key-num:active, .key-soft.pressed, .dpad-btn.pressed, .key-num.pressed { background: #c1e879; color: #172018; }
+.player-bottom-dock { flex-shrink: 0; max-width: 960px; background: #242d28; border: 1px solid #59675b; border-radius: 4px; box-shadow: 0 5px 0 #101713; padding: 8px; }
+.pixel-btn, .pixel-btn-chip { border-radius: 3px !important; box-shadow: none !important; text-shadow: none !important; }
+.pixel-btn.btn-neon-cyan, .pixel-btn.btn-neon-amber { color: #d8eac5; border-color: #718568; background: #344238; }
+.pixel-btn:hover, .pixel-btn-chip:hover { filter: brightness(1.25); }
+#view-library { background: #1b211e; }
+.library-header { border-bottom: 1px solid #4a584b; }
+.library-title h2, .settings-section-title { color: #e9f0df; font-family: Silkscreen, monospace; text-shadow: none; }
+.library-title p, .option-info p { color: #aab4a5; }
+.btn-primary { background: #c1e879; color: #1c281a; border-color: #c1e879; box-shadow: none; border-radius: 3px; }
+.btn-secondary, .select-custom, .search-input { border-radius: 3px; }
+.dropzone-banner { background: #27332a; border-color: #748a69; border-radius: 4px; }
+.games-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.game-card { background: #29352d; border: 1px solid #596c5b; border-radius: 4px; box-shadow: 4px 4px 0 #101813; }
+.game-card:hover { border-color: #c1e879; box-shadow: 4px 4px 0 #101813; }
+.game-card-icon { background: #1b251d; border-color: #71866d; border-radius: 3px; image-rendering: pixelated; }
+.btn-card-play { background: #c1e879; color: #172117; border-radius: 2px; }
+.settings-section { background: #252f29; border: 1px solid #4a5b4e; border-radius: 4px; }
+.keymap-hud-modal, .text-input-box { border-color: #8ea580; border-radius: 4px; }
+body.pip-mode .handset { display: contents; }
+body.pip-mode #game-viewport-container { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+body.pip-mode .handset-top { display: none; }
+@media (max-height: 720px) { .handset { padding-top: 5px; padding-bottom: 7px; } .handset-top { flex-basis: 18px; } .key-dpad-center { grid-template-rows: repeat(3, 15px); } .key-num { height: 22px; } .keypad-drawer.open { padding-top: 4px; } }
+@media (max-width: 700px) { #titlebar { padding: 0 8px; } .titlebar-center .pip-controls, .titlebar-center .volume-control-wrap { display: none; } .retro-tag { display: none; } #view-player { padding: 8px; } .player-bottom-dock { overflow-x: auto; justify-content: flex-start; gap: 8px; } .dock-cluster { flex-shrink: 0; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+
+/* The entire application lives in the device, not beside it. */
+body:not(.pip-mode) { align-items: center; justify-content: center; padding: 12px; background: #101715; background-image: linear-gradient(#ffffff08 1px, transparent 1px), linear-gradient(90deg, #ffffff08 1px, transparent 1px); background-size: 24px 24px; }
+.device-shell { width: min(100%, 510px); height: min(100%, 930px); min-height: 0; display: flex; flex-direction: column; padding: 14px 18px 10px; background: #52635b; border: 4px solid #8b9d8e; outline: 3px solid #27372f; border-radius: 30px 30px 42px 42px; box-shadow: 0 14px 0 #26362e, 0 28px 50px #0009, inset 0 0 0 3px #34453b; }
+.device-hardware { flex: 0 0 25px; display: flex; align-items: center; justify-content: space-between; gap: 14px; color: #eff4db; font: 11px Silkscreen, monospace; letter-spacing: 1px; }
+.device-name span { color: #c9e991; }
+.device-speaker { width: 58px; height: 7px; background: repeating-linear-gradient(90deg,#1a2720 0 4px,transparent 4px 7px); }
+.device-led { width: 7px; height: 7px; background: #c1e879; box-shadow: 0 0 6px #c1e879; }
+#titlebar { height: 37px; padding: 0 8px; background: #26372c; border: 3px solid #17241b; border-bottom: 0; }
+.logo-badge { display: none; }
+.active-game-pill { max-width: 155px; border: 0; background: transparent; padding: 0; color: #d3e2c3; font-size: 10px; }
+.titlebar-center { margin-left: auto; }
+.btn-pip { font: 10px Silkscreen, monospace; padding: 5px 8px; }
+.window-btn { width: 23px; height: 25px; font-size: 11px; }
+#nav-tabs { flex: 0 0 auto; display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 0; overflow: visible; padding: 0; background: #26372c; border: 3px solid #17241b; border-top: 0; border-bottom: 1px solid #61745d; }
+.nav-tab { display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 5px 1px; min-height: 45px; font: 9px Silkscreen, monospace; white-space: nowrap; border-bottom-width: 3px; }
+.nav-tab > span:first-child { font-size: 15px; line-height: 1; }
+.tab-badge { display: none; }
+#app-container { flex: 1 1 0; min-height: 0; border: 3px solid #17241b; border-top: 0; background: #1a271e; }
+.view-panel { min-height: 0; }
+#view-player { background: #111b15; padding: 7px; gap: 7px; }
+#game-viewport-container { background: #0b100d; border: 1px solid #576b54; border-radius: 0; padding: 0; box-shadow: none; }
+#game-frame-wrap { border: 0; box-shadow: none; }
+.player-bottom-dock { width: 100%; max-width: none; padding: 4px; gap: 4px; overflow-x: auto; justify-content: flex-start; background: #283b2c; box-shadow: none; border: 1px solid #596f58; }
+.dock-cluster { flex-shrink: 0; gap: 4px; }
+.pixel-btn, .pixel-btn-chip { font-size: 9px; min-height: 32px; padding: 5px 7px; }
+.dock-volume-wrap { display: none; }
+.keypad-drawer, .keypad-drawer.open { padding: 8px 0 0; }
+body:not([data-view="player"]) .keypad-drawer { display: none; }
+.phone-keypad { width: min(100%, 300px); }
+.key-dpad-center { grid-template-columns: repeat(3, 32px); grid-template-rows: repeat(3, 20px); border-radius: 4px; }
+.key-soft { height: 30px; width: 65px; font-family: Silkscreen, monospace; }
+.key-num { height: 28px; }
+.device-footer { flex: 0 0 16px; display: flex; align-items: end; justify-content: center; gap: 9px; color: #c4d4c0; font: 8px Silkscreen, monospace; letter-spacing: 1px; }
+.device-footer span { color: #c1e879; }
+#view-library, #view-controls, #view-video, #view-saves { display: none; width: 100%; max-width: none; margin: 0; padding: 14px; flex-direction: column; overflow: auto; background: #1b2b20; }
+#view-library.active, #view-controls.active, #view-video.active, #view-saves.active { display: flex; }
+.library-header { display: block; padding-bottom: 12px; margin-bottom: 12px; }
+.library-title h2 { font: 20px Silkscreen, monospace; margin: 0; }
+.library-title p { font-size: 11px; line-height: 1.5; }
+.library-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.search-input-wrap { width: 100%; }
+.search-input { width: 100%; min-height: 38px; background: #101b13; }
+.auto-open-toggle { order: 5; width: 100%; padding: 6px; background: none; border: 0; }
+.btn-primary, .btn-secondary { min-height: 36px; font-size: 10px; }
+.btn-primary { background: #c1e879; }
+.recent-games-section { padding: 9px; margin-bottom: 12px; border-radius: 2px; }
+.recent-title { font-size: 10px; }
+.recent-game-card { min-width: 145px; border-radius: 2px; }
+.dropzone-banner { padding: 10px; margin-bottom: 12px; }
+.dropzone-icon { display: none; }
+.dropzone-title { font-size: 11px; }
+.dropzone-sub { font-size: 9px; }
+.games-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin: 0; }
+.game-card { padding: 8px; gap: 6px; min-width: 0; align-items: center; text-align: center; }
+.game-card:hover { transform: none; }
+.game-card-top { flex-direction: column; width: 100%; gap: 6px; }
+.game-card-icon { width: 48px; height: 48px; }
+.game-card-info { width: 100%; }
+.game-card-title { font-size: 10px; }
+.game-card-vendor { font-size: 9px; }
+.game-card-meta { display: none; }
+.game-card-actions { width: 100%; }
+.btn-card-play { width: 100%; min-height: 30px; font-size: 10px; padding: 5px; }
+.settings-section { padding: 12px; margin-bottom: 10px; }
+.settings-section-title { font-size: 13px; line-height: 1.4; }
+.controls-grid { grid-template-columns: 1fr; gap: 5px; }
+.control-item { border-radius: 2px; padding: 7px; }
+.control-key-btn { background: #17251b; border-color: #71836c; }
+.option-row { align-items: stretch; flex-direction: column; gap: 8px; }
+.select-custom { width: 100%; min-height: 36px; }
+.window-settings .pip-controls, .window-settings .volume-control-wrap { display: flex; margin-top: 8px; flex-wrap: wrap; }
+.window-settings p { color: var(--text-muted); font-size: 11px; }
+.keymap-hud-overlay, .text-input-dialog { position: fixed; z-index: 2000; }
+.keymap-hud-modal, .text-input-box { max-height: 90vh; max-width: min(94vw, 700px); overflow: auto; }
+body.pip-mode { padding: 0; }
+body.pip-mode .device-shell { display: contents; }
+body.pip-mode .device-hardware, body.pip-mode .device-footer { display: none; }
+body.pip-mode #app-container { border: 0; }
+@media (max-height: 720px) { .device-shell { padding-top: 7px; padding-bottom: 5px; } .device-hardware { flex-basis: 18px; } .device-footer { display: none; } .key-num { height: 22px; } .key-dpad-center { grid-template-rows: repeat(3, 15px); } }
+@media (max-width: 450px) { body:not(.pip-mode) { padding: 5px; } .device-shell { padding-left: 10px; padding-right: 10px; } .games-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .nav-tab { font-size: 8px; } }
+.player-bottom-dock { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); overflow: visible; }
+.dock-cluster, .pixel-btn-group { display: contents !important; }
+.dock-cluster .btn-label { display: inline !important; }
+.dock-cluster .btn-icon { display: none; }
+.player-bottom-dock .pixel-btn, .player-bottom-dock .pixel-btn-chip { width: 100%; min-width: 0; padding: 4px 2px; font-size: 8px; letter-spacing: 0; background: #304337; border: 1px solid #70856c; color: #edf5dc; }
+.pixel-badge-res { display: none; }
+.dock-more-wrap { min-width: 0; }
+.dock-more-menu { background: #1b2b20; border-color: #71866d; }
+.device-shell { border-radius: 4px; }
+.player-bottom-dock .pixel-btn, .player-bottom-dock .pixel-btn-chip { font-size: 10px; }
+
+/* Phone window and launcher */
+body:not(.pip-mode) { padding: 0; background: transparent; }
+.device-shell { width: 100%; height: 100%; max-width: none; padding: 14px 16px 10px; border: 4px solid #83978a; border-radius: 24px 24px 34px 34px; outline: 0; box-shadow: inset 0 0 0 3px #34453b; }
+.device-hardware { -webkit-app-region: drag; flex-basis: 30px; }
+.device-name { font-size: 10px; }
+#titlebar { min-height: 38px; height: 38px; padding: 0 7px; }
+.titlebar-left { min-width: 0; gap: 7px; }
+.screen-home { -webkit-app-region: no-drag; width: 29px; height: 28px; border: 1px solid #7d9272; background: #344b37; color: #d0ec9d; cursor: pointer; font: 20px monospace; line-height: 1; }
+#btn-back-settings { display: none; }
+body[data-view="controls"] #btn-back-settings, body[data-view="video"] #btn-back-settings, body[data-view="saves"] #btn-back-settings { display: block; }
+#screen-title { font: 10px Silkscreen, monospace; color: #d8e8c6; white-space: nowrap; }
+.active-game-pill { display: none !important; }
+.titlebar-right { gap: 1px; }
+#win-btn-max { display: none; }
+.btn-pip { font-size: 9px; }
+body:not([data-view="player"]) .titlebar-center { display: none; }
+#nav-tabs { display: none; }
+#app-container { border-top: 1px solid #61745d; }
+#view-library { padding: 16px 14px; background: #243a2b; }
+.library-header { margin: 0; padding: 0; border: 0; }
+.library-title h2 { font: 22px Silkscreen, monospace; color: #ecf7d4; }
+.library-title p { font: 14px VT323, monospace; color: #b9cdb0; }
+.library-actions { margin: 14px 0; }
+.library-actions > :not(.search-input-wrap) { display: none; }
+.search-input { background: #16281b; border: 1px solid #71896b; height: 38px; font: 16px VT323, monospace; }
+.search-icon { filter: grayscale(1); }
+.recent-games-section, .dropzone-banner { display: none !important; }
+.launcher-heading { display: flex; justify-content: space-between; margin: 4px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #60765d; color: #b9d399; font: 9px Silkscreen, monospace; }
+.launcher-heading span:last-child { color: #91a98e; }
+.launcher-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); align-content: start; gap: 14px 8px; padding: 4px 0 18px; }
+#games-grid { display: contents; }
+.launcher-app, .game-card { appearance: none; min-width: 0; border: 0; background: transparent; box-shadow: none; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 4px; cursor: pointer; color: #ecf4df; text-align: center; font: 12px VT323, monospace; }
+.launcher-app.hidden { display: none; }
+.launcher-app:hover, .game-card:hover { background: #ffffff0c; box-shadow: none; transform: none; }
+.launcher-icon, .game-card-icon { display: flex; align-items: center; justify-content: center; width: 54px; height: 54px; border: 3px solid #9fb693; border-radius: 4px; background: #426448; color: #e6f4d0; box-shadow: 3px 3px 0 #17271a; font: 30px monospace; }
+.icon-settings { background: #526e58; }
+.icon-import { background: #b7d77d; color: #263b25; font-weight: bold; }
+.icon-resume { background: #8caa5b; color: #1e301d; font-size: 22px; }
+.game-card-top { gap: 7px; }
+.game-card-title { color: #ecf4df; white-space: normal; line-height: 1.1; font: 14px VT323, monospace; overflow-wrap: anywhere; }
+.game-card-vendor, .game-card-actions { display: none; }
+.game-card-icon img { object-fit: contain; }
+.game-card-icon .fallback-icon { font-size: 22px; }
+#view-settings { display: none; flex-direction: column; overflow: auto; padding: 16px 14px; background: #1b2b20; }
+#view-settings.active { display: flex; }
+.screen-heading > span { color: #b9d399; font: 9px Silkscreen, monospace; }
+.screen-heading h2 { margin-top: 7px; font: 20px Silkscreen, monospace; }
+.screen-heading p { margin: 6px 0 18px; color: #adbea8; font: 15px VT323, monospace; }
+.settings-apps { display: grid; gap: 7px; }
+.settings-link { display: grid; grid-template-columns: 35px 1fr 15px; align-items: center; gap: 10px; min-height: 62px; padding: 8px; border: 1px solid #71886d; background: #2a402e; color: #e8f2db; text-align: left; cursor: pointer; }
+.settings-link > span:first-child { color: #c4e68f; font-size: 24px; text-align: center; }
+.settings-link b, .settings-link small { display: block; }
+.settings-link b { font: 11px Silkscreen, monospace; }
+.settings-link small { margin-top: 4px; color: #b1c5ab; font: 14px VT323, monospace; }
+.settings-link:hover { border-color: #c1e879; background: #354e38; }
+.settings-preference { margin-top: 14px; border-top: 1px solid #5a7058; padding-top: 8px; }
+.settings-preference .auto-open-toggle { background: none; border: 0; font-size: 10px; }
+#view-controls, #view-video, #view-saves { background: #1b2b20; }
+#view-saves .settings-section > div[style*="display: flex"] { flex-wrap: wrap; }
+body.pip-mode .device-shell { border: 0; }
+body.pip-mode .pip-menu-toggle-btn { opacity: 0; }
+body.pip-mode #view-player:hover .pip-menu-toggle-btn, body.pip-mode .pip-menu-toggle-btn:focus-visible { opacity: .9; }
+@media (max-height: 700px) { .device-shell { padding-top: 6px; padding-bottom: 5px; } .device-hardware { flex-basis: 20px; } }
+
+/* Landscape games turn the handset sideways and put its controls alongside the screen. */
+body.game-landscape:not(.pip-mode) .device-shell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 220px); grid-template-rows: 24px 38px minmax(0, 1fr) 14px; column-gap: 10px; align-items: stretch; }
+body.game-landscape:not(.pip-mode) .device-hardware { grid-column: 1 / -1; }
+body.game-landscape:not(.pip-mode) #titlebar { grid-column: 1 / -1; }
+body.game-landscape:not(.pip-mode) #app-container { grid-column: 1; grid-row: 3; width: 100%; height: 100%; }
+body.game-landscape:not(.pip-mode) .keypad-drawer.open { grid-column: 2; grid-row: 3; align-self: center; padding: 0; }
+body.game-landscape:not(.pip-mode) .phone-keypad { width: 100%; }
+body.game-landscape:not(.pip-mode) .device-footer { grid-column: 1 / -1; display: flex; }
+body.game-landscape:not(.pip-mode) #view-player { width: 100%; height: 100%; }
+body.game-landscape:not(.pip-mode) #game-viewport-container { min-width: 0; }
+body.game-landscape:not(.pip-mode) .key-soft { width: 48px; }
+body.game-landscape:not(.pip-mode):has(#keypad-drawer:not(.open)) .device-shell { grid-template-columns: minmax(0, 1fr); }
+
+/* Hard pixel geometry: one pixel grid, flat materials, stepped silhouette. */
+:root { --bg-dark:#171b25; --bg-surface:#232938; --bg-card:#30384a; --border-color:#586479; --primary:#d2ed91; --text-main:#f0eedc; --text-muted:#a9b3bf; }
+.device-shell { background:#343d50; border:0; padding:18px 18px 12px; border-radius:0; box-shadow:inset 0 0 0 4px #121923,inset 0 0 0 8px #91a0ae,inset 0 0 0 12px #4c5b70; clip-path:polygon(16px 0,calc(100% - 16px) 0,calc(100% - 16px) 4px,calc(100% - 8px) 4px,calc(100% - 8px) 8px,calc(100% - 4px) 8px,calc(100% - 4px) 16px,100% 16px,100% calc(100% - 16px),calc(100% - 4px) calc(100% - 16px),calc(100% - 4px) calc(100% - 8px),calc(100% - 8px) calc(100% - 8px),calc(100% - 8px) calc(100% - 4px),calc(100% - 16px) calc(100% - 4px),calc(100% - 16px) 100%,16px 100%,16px calc(100% - 4px),8px calc(100% - 4px),8px calc(100% - 8px),4px calc(100% - 8px),4px calc(100% - 16px),0 calc(100% - 16px),0 16px,4px 16px,4px 8px,8px 8px,8px 4px,16px 4px); }
+.device-hardware { color:#e4e5d3; padding:0 6px; }
+.device-speaker { border-radius:0; height:6px; background:repeating-linear-gradient(90deg,#131c2c 0 4px,transparent 4px 8px); }
+.device-led { width:6px; height:6px; box-shadow:2px 2px #1c2735; }
+#titlebar { background:#1b2531; border-color:#101924; }
+#app-container { background:#19242b; border:4px solid #101924; border-top:2px solid #526650; }
+#view-library, #view-settings, #view-controls, #view-video, #view-saves { background:#263a32; }
+.screen-home, .btn-pip, .search-input, .launcher-icon, .game-card-icon, .settings-link, .settings-section, .recent-game-card, .select-custom { border-radius:0; }
+.launcher-icon, .game-card-icon { border:2px solid #bdd29c; box-shadow:4px 4px #15251f,inset 2px 2px #ffffff24; }
+.launcher-app:hover .launcher-icon, .game-card:hover .game-card-icon { border-color:#e5f9b9; background:#536b47; }
+.library-title h2 { font-size:19px; }
+.game-card-title { font-family:Silkscreen,monospace; font-size:9px; line-height:1.6; }
+.launcher-app { font-family:Silkscreen,monospace; font-size:9px; line-height:1.6; }
+.keypad-drawer.open { padding:12px 0 2px; }
+.phone-keypad { width:min(100%,300px); gap:6px; }
+.keypad-row-soft { gap:10px; }
+.key-soft, .key-num, .key-call, .key-end, .dpad-btn, .phone-qwerty button { border-radius:0; border:2px solid #8996a6; background:#273143; color:#f0eedc; box-shadow:2px 3px 0 #111b2a,inset 2px 2px 0 #536177; font-family:Silkscreen,monospace; touch-action:none; cursor:pointer; }
+.key-num { height:34px; display:flex; flex-direction:row; gap:10px; align-items:center; justify-content:center; }
+.key-num .digit { font:16px Silkscreen,monospace; }
+.key-num .subletters { font:8px Silkscreen,monospace; color:#a9b6c9; }
+.keypad-grid-num { gap:6px; }
+.key-dpad-center { border:0; border-radius:0; background:#172131; padding:4px; gap:2px; grid-template-columns:repeat(3,25px); grid-template-rows:repeat(3,20px); }
+.dpad-btn { border:0; box-shadow:inset 2px 2px #64738a; font-size:10px; }
+.dpad-center { background:#c4df95; color:#1e2b23; box-shadow:inset 2px 2px #f2f7cd; }
+.key-soft { height:34px; width:68px; font-size:10px; color:#d2ed91; }
+.key-call, .key-end { height:24px; width:54px; font-size:0; }
+.key-call::after { content:'CALL'; font:8px Silkscreen,monospace; color:#c8e69b; }
+.key-end::after { content:'END'; font:8px Silkscreen,monospace; color:#efb3a8; }
+.key-soft:active, .key-num:active, .dpad-btn:active, .phone-qwerty button:active, .phone-qwerty button.pressed, .phone-keypad .pressed { background:#d2ed91; color:#1b2b26; transform:translate(1px,2px); box-shadow:inset 2px 2px #9eb96a; }
+.phone-qwerty { display:none; }
+.device-footer { padding-top:8px; font-size:7px; color:#a7b5c6; }
+.player-bottom-dock, .pixel-btn, .pixel-btn-chip { border-radius:0 !important; }
+body.game-landscape:not(.pip-mode) .device-shell { display:flex; flex-direction:column; gap:0; }
+body.game-landscape:not(.pip-mode) #app-container { flex:1 1 0; min-height:0; height:auto; }
+body.game-landscape:not(.pip-mode) .keypad-drawer.open { width:100%; align-self:stretch; padding:12px 6px 2px; }
+body.game-landscape:not(.pip-mode) .phone-keypad { width:100%; gap:8px; }
+body.game-landscape:not(.pip-mode) .keypad-grid-num { display:none; }
+body.game-landscape:not(.pip-mode) .phone-qwerty { display:flex; flex-direction:column; gap:5px; }
+body.game-landscape:not(.pip-mode) .keypad-call-row { display:none; }
+body.game-landscape:not(.pip-mode) .keypad-row-soft { justify-content:center; gap:28px; }
+body.game-landscape:not(.pip-mode) .key-soft { width:78px; }
+.qwerty-row { display:flex; gap:5px; justify-content:center; }
+.phone-qwerty button { flex:1; max-width:52px; min-width:0; height:29px; padding:0; font-size:12px; }
+.phone-qwerty .qwerty-space { flex:4; max-width:240px; font-size:9px; }
+body.pip-mode .device-shell { clip-path:none; box-shadow:none; }
+@media (max-height:700px) { .key-num { height:25px; } .phone-keypad { gap:4px; } .phone-qwerty button { height:24px; } .keypad-drawer.open { padding-top:7px; } }

@@ -1,0 +1,8 @@
+{
+  "publicDistributionApproved": false,
+  "blockers": [
+    "Resolve exact source revisions and license compatibility of inherited Java runtime classes (both JARs include org/recompile classes).",
+    "Provide corresponding sources/build instructions and complete required notices before approving public distribution."
+  ],
+  "note": "Internal builds and private repository preparation do not establish redistribution rights."
+}

@@ -1,0 +1,22 @@
+--- upstream/bld/j2me.js
++++ jarumi/bld/j2me.js
+@@ -3413,8 +3413,7 @@
+             switch (type) {
+                 //这里拦截了报错
+                 case 1 /* ArrayIndexOutOfBoundsException */:
+-                    console.log('throwArrayIndexOutOfBoundsException'+a)
+-                    //J2ME.throwArrayIndexOutOfBoundsException(a);
++                    J2ME.throwArrayIndexOutOfBoundsException(a);
+                     break;
+                 case 0 /* ArithmeticException */:
+                     console.log('ArithmeticException')
+@@ -6778,8 +6777,7 @@
+     }
+     J2ME.checkArrayBounds = checkArrayBounds;
+     function throwArrayIndexOutOfBoundsException(index) {
+-        console.log("newArrayIndexOutOfBoundsException ");
+-        //throw $.newArrayIndexOutOfBoundsException(String(index));
++        throw $.newArrayIndexOutOfBoundsException(String(index));
+     }
+     J2ME.throwArrayIndexOutOfBoundsException = throwArrayIndexOutOfBoundsException;
+     function throwArithmeticException() {

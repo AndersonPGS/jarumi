@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Jarumi Player</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+
+  <link rel="stylesheet" type="text/css" href="style/main.css">
+  <link rel="stylesheet" type="text/css" href="style/confirm.css">
+  <link rel="stylesheet" type="text/css" href="style/progress_activity.css">
+  <link rel="stylesheet" type="text/css" href="style/headers.css">
+  <link rel="stylesheet" type="text/css" href="style/drawer.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: #000000 !important;
+      overflow: hidden !important;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #display-container, #display, #drawer, #main {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: #000000 !important;
+      float: none !important;
+      border: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Fully responsive pixel-crisp canvas that scales with container */
+    #canvas {
+      display: block !important;
+      position: relative !important;
+      top: 0 !important;
+      left: 0 !important;
+      background: #000000 !important;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated !important;
+      image-rendering: crisp-edges !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: contain !important;
+      outline: none;
+      margin: auto !important;
+    }
+
+    /* A quarter turn needs an unrotated box with the viewport dimensions swapped. */
+    body.rotation-quarter #main {
+      width: 100vh !important;
+      height: 100vw !important;
+      max-width: none !important;
+      max-height: none !important;
+      top: 50% !important;
+      left: 50% !important;
+    }
+
+    /* Scaling / Filter modes */
+    body.filter-smooth #canvas {
+      image-rendering: auto !important;
+    }
+
+    /* Retro LCD Grid Shader */
+    #shader-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: none;
+      z-index: 50;
+    }
+
+    body.shader-lcd #shader-overlay {
+      display: block;
+      background: 
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+      background-size: 100% 3px, 3px 100%;
+    }
+
+    body.shader-crt #shader-overlay {
+      display: block;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.28),
+        rgba(0, 0, 0, 0.28) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+    }
+
+    /* Loading screens */
+    #download-screen, #splash-screen {
+      background: #08090f !important;
+      color: #00f0ff !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 999 !important;
+    }
+
+    .title {
+      font-size: 14px !important;
+      font-weight: 600;
+      color: #00f0ff !important;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px !important;
+    }
+
+    progress {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 180px;
+      height: 6px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid #1f2742;
+      background: #101424;
+    }
+    progress::-webkit-progress-bar { background: #101424; }
+    progress::-webkit-progress-value { background: linear-gradient(90deg, #00f0ff, #0077ff); }
+
+    #sidebar, #drawer header, #header-drawer-button, #header-ok-button, #back-button, #gamepad {
+      display: none !important;
+    }
+
+    .text-editor {
+      position: absolute !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      background: #111422 !important;
+      color: #00f0ff !important;
+      border: 2px solid #00f0ff !important;
+      border-radius: 6px !important;
+      padding: 6px 10px !important;
+      font-family: monospace, sans-serif !important;
+      font-size: 15px !important;
+      z-index: 1000 !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9), 0 0 16px rgba(0, 240, 255, 0.4) !important;
+      outline: none !important;
+      box-sizing: border-box !important;
+    }
+
+    .text-editor.show {
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+  </style>
+
+  <!-- Master Audio Hook for universal volume control & mute -->
+  <script>
+    window.masterVolume = 0.8;
+    window.masterMuted = false;
+    try {
+      if (window.parent && window.parent.App) {
+        window.masterVolume = (typeof window.parent.App.volume === 'number') ? window.parent.App.volume : 0.8;
+        window.masterMuted = !!window.parent.App.isMuted;
+      }
+    } catch (e) {}
+
+    window.activeMasterGains = [];
+    window.activeTinySynths = [];
+
+    // 1. Intercept AudioContext destination
+    const OrigAudioContext = window.AudioContext || window.webkitAudioContext;
+    if (OrigAudioContext) {
+      const origConnect = AudioNode.prototype.connect;
+      AudioNode.prototype.connect = function(destinationNode, ...args) {
+        if (destinationNode && destinationNode === this.context.destination) {
+          if (!this.context._pipMasterGain) {
+            try {
+              const mg = this.context.createGain();
+              mg.gain.value = window.masterMuted ? 0 : window.masterVolume;
+              origConnect.call(mg, this.context.destination);
+              this.context._pipMasterGain = mg;
+              window.activeMasterGains.push(mg);
+            } catch (err) {
+              console.warn('Master gain creation error:', err);
+            }
+          }
+          if (this.context._pipMasterGain) {
+            return origConnect.call(this, this.context._pipMasterGain, ...args);
+          }
+        }
+        return origConnect.call(this, destinationNode, ...args);
+      };
+    }
+
+    // 2. Volume applier function
+    window.applyTinySynthVolume = function(synth) {
+      if (!synth) return;
+      try {
+        const targetVol = window.masterMuted ? 0 : (window.masterVolume * 0.7);
+        synth.masterVol = targetVol;
+        if (typeof synth.setMasterVol === 'function') {
+          synth.setMasterVol(targetVol);
+        }
+      } catch (e) {}
+    };
+
+    window.setEmulatorVolume = function(vol, muted) {
+      if (typeof vol === 'number') {
+        window.masterVolume = Math.max(0, Math.min(1, vol));
+      }
+      if (typeof muted === 'boolean') {
+        window.masterMuted = muted;
+      }
+
+      const effectiveGain = window.masterMuted ? 0 : window.masterVolume;
+
+      // Update all active Master Gain Nodes
+      window.activeMasterGains.forEach(gainNode => {
+        try {
+          gainNode.gain.setValueAtTime(effectiveGain, gainNode.context.currentTime);
+        } catch (e) {
+          try { gainNode.gain.value = effectiveGain; } catch (e2) {}
+        }
+      });
+
+      // Update WebAudioTinySynth instances
+      window.activeTinySynths.forEach(s => window.applyTinySynthVolume(s));
+
+      // Update any HTML5 Audio/Video tags
+      document.querySelectorAll('audio, video').forEach(el => {
+        el.volume = effectiveGain;
+        el.muted = window.masterMuted;
+      });
+    };
+  </script>
+
+  <!-- Required runtime libraries -->
+  <script src="libs/encoding.js"></script>
+  <script src="libs/webaudio-tinysynth.min.js"></script>
+  <script>
+    if (window.WebAudioTinySynth) {
+      const OrigSynth = window.WebAudioTinySynth;
+      window.WebAudioTinySynth = function(...args) {
+        const instance = new OrigSynth(...args);
+        window.activeTinySynths.push(instance);
+        window.applyTinySynthVolume(instance);
+        return instance;
+      };
+      window.WebAudioTinySynth.prototype = OrigSynth.prototype;
+    }
+  </script>
+  <script src="libs/BenzAMRRecorder.min.js"></script>
+
+  <!-- Config and J2ME bytecode interpreter -->
+  <script type="text/javascript" src="config/default.js" defer></script>
+  <script type="text/javascript" src="config/runtests.js" defer></script>
+  <script type="text/javascript" src="config/build.js" defer></script>
+  <script type="text/javascript" src="config/urlparams.js" defer></script>
+  <script type="text/javascript" src="libs/promise-6.0.0.js" defer></script>
+  <script type="text/javascript" src="polyfill/IndexedDB-getAll-shim.js" defer></script>
+  <script type="text/javascript" src="libs/compiled-method-cache.js" defer></script>
+  <script type="text/javascript" src="bld/native.js" defer></script>
+  <script type="text/javascript" src="bld/j2me.js" defer></script>
+  <script type="text/javascript" src="bld/main-all.js" defer></script>
+</head>
+
+<body>
+  <div id="shader-overlay"></div>
+  <input id="File" type="file" style="visibility: hidden; display:none;"/> 
+
+  <div id="display-container">
+    <div id="display">
+      <section id="sidebar" data-type="sidebar" style="display:none">
+        <header><h1>Menu</h1></header>
+        <nav><ul></ul></nav>
+      </section>
+
+      <section id="drawer" role="region">
+        <header style="display:none">
+          <a href="#"><span class="icon icon-menu">hide</span></a>
+          <a id="header-drawer-button" href="#drawer"><span class="icon icon-menu">show</span></a>
+          <menu id="header-ok-button" type="toolbar" style="display:none"><button>OK</button></menu>
+          <h1 id="display_title"></h1>
+        </header>
+        <div id="main" role="main">
+          <canvas id="canvas" tabindex="1"></canvas>
+          <input id="password-editor" class="text-editor" type="password">
+          <input id="tel-editor" class="text-editor" type="tel">
+          <input id="number-editor" class="text-editor" type="number">
+          <input id="email-editor" class="text-editor" type="email">
+          <input id="url-editor" class="text-editor" type="url">
+          <div id="textarea-editor" class="text-editor" contenteditable="true"></div>
+          <div id="hidden-textarea-editor" class="text-editor"></div>
+          <button id="back-button">Back</button>
+        </div>
+      </section>
+
+      <div id="gamepad" style="display:none"></div>
+
+      <div id="download-screen" class="screen">
+        <h1 class="title">Carregando jogo...</h1>
+        <div class="download-progress-container">
+          <progress class="pack-activity" id="download-bar" value="0" max="100"></progress>
+        </div>
+      </div>
+
+      <div id="splash-screen" class="screen">
+        <h1 class="title">Iniciando MIDlet J2ME...</h1>
+        <div class="splash-progress-container">
+          <progress></progress>
+        </div>
+      </div>
+
+      <div id="exit-screen" class="screen"></div>
+      <div id="background-screen"></div>
+
+      <form role="dialog" data-type="confirm" class="lcdui-alert" id="lcdui-alert" style="display: none">
+        <section>
+          <h1 class="title"></h1>
+          <p class="text"></p>
+          <p style="border-top: 0"><progress style="display: none"></progress></p>
+        </section>
+        <menu>
+          <button class="button0" style="display: none"></button>
+          <button class="button1" style="display: none"></button>
+        </menu>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const J2ME_KEYS = {
+      UP: -1,
+      DOWN: -2,
+      LEFT: -3,
+      RIGHT: -4,
+      FIRE: -5,
+      SOFT_LEFT: -6,
+      SOFT_RIGHT: -7,
+      CLEAR: -8,
+      CALL: -10,
+      END: -11,
+      NUM0: 48,
+      NUM1: 49,
+      NUM2: 50,
+      NUM3: 51,
+      NUM4: 52,
+      NUM5: 53,
+      NUM6: 54,
+      NUM7: 55,
+      NUM8: 56,
+      NUM9: 57,
+      STAR: 42,
+      POUND: 35
+    };
+
+    let keyMapping = {
+      'ArrowUp': J2ME_KEYS.UP,
+      'KeyW': J2ME_KEYS.UP,
+      'ArrowDown': J2ME_KEYS.DOWN,
+      'KeyS': J2ME_KEYS.DOWN,
+      'ArrowLeft': J2ME_KEYS.LEFT,
+      'KeyA': J2ME_KEYS.LEFT,
+      'ArrowRight': J2ME_KEYS.RIGHT,
+      'KeyD': J2ME_KEYS.RIGHT,
+      'Enter': J2ME_KEYS.FIRE,
+      'Space': J2ME_KEYS.FIRE,
+      'KeyJ': J2ME_KEYS.FIRE,
+      'Numpad5': J2ME_KEYS.FIRE,
+
+      // Soft keys
+      'KeyQ': J2ME_KEYS.SOFT_LEFT,
+      'KeyZ': J2ME_KEYS.SOFT_LEFT,
+      'F1': J2ME_KEYS.SOFT_LEFT,
+      'KeyE': J2ME_KEYS.SOFT_RIGHT,
+      'KeyX': J2ME_KEYS.SOFT_RIGHT,
+      'F2': J2ME_KEYS.SOFT_RIGHT,
+
+      // Digits
+      'Digit0': J2ME_KEYS.NUM0,
+      'Numpad0': J2ME_KEYS.NUM0,
+      'Digit1': J2ME_KEYS.NUM1,
+      'Numpad1': J2ME_KEYS.NUM1,
+      'Digit2': J2ME_KEYS.NUM2,
+      'Numpad2': J2ME_KEYS.NUM2,
+      'Digit3': J2ME_KEYS.NUM3,
+      'Numpad3': J2ME_KEYS.NUM3,
+      'Digit4': J2ME_KEYS.NUM4,
+      'Numpad4': J2ME_KEYS.NUM4,
+      'Digit5': J2ME_KEYS.NUM5,
+      'Digit6': J2ME_KEYS.NUM6,
+      'Numpad6': J2ME_KEYS.NUM6,
+      'Digit7': J2ME_KEYS.NUM7,
+      'Numpad7': J2ME_KEYS.NUM7,
+      'Digit8': J2ME_KEYS.NUM8,
+      'Numpad8': J2ME_KEYS.NUM8,
+      'Digit9': J2ME_KEYS.NUM9,
+      'Numpad9': J2ME_KEYS.NUM9,
+      'NumpadMultiply': J2ME_KEYS.STAR,
+      'NumpadDecimal': J2ME_KEYS.POUND,
+      'Minus': J2ME_KEYS.STAR,
+      'Equal': J2ME_KEYS.POUND,
+
+      // Clear / Backspace for text & typing
+      'Backspace': J2ME_KEYS.CLEAR,
+      'Delete': J2ME_KEYS.CLEAR
+    };
+
+    const activeKeys = new Map(); // code -> { j2meCode, delayTimer, repeatTimer }
+
+    // Human-grade Typematic timings (matches authentic Nokia / Symbian phone firmware):
+    // Standard key tap/click duration is ~80ms-250ms.
+    // Setting repeat delay to 400ms guarantees a tap or normal hold NEVER triggers a 2nd repeat.
+    const KEY_REPEAT_DELAY = 400; // ms before auto-repeat begins (typematic initial delay)
+    const KEY_REPEAT_RATE = 120;  // ms between repeats when intentionally holding down
+
+    // Directional keys & 8-way diagonal synthesis
+    const D_UP = -1;
+    const D_DOWN = -2;
+    const D_LEFT = -3;
+    const D_RIGHT = -4;
+    const IS_DIRECTIONAL = (c) => c === D_UP || c === D_DOWN || c === D_LEFT || c === D_RIGHT;
+
+    // Standard J2ME 8-way diagonal mapping (NUM1, NUM3, NUM7, NUM9)
+    const DIAG_MAP = {
+      '-1,-3': 49, // UP + LEFT  -> NUM1
+      '-3,-1': 49,
+      '-1,-4': 51, // UP + RIGHT -> NUM3
+      '-4,-1': 51,
+      '-2,-3': 55, // DOWN + LEFT  -> NUM7
+      '-3,-2': 55,
+      '-2,-4': 57, // DOWN + RIGHT -> NUM9
+      '-4,-2': 57
+    };
+
+    let activeDiagonal = null; // currently synthesized diagonal code (49, 51, 55, 57) or null
+
+    function sendKey(code, isDown) {
+      if (typeof MIDP === 'undefined') return;
+      if (isDown) {
+        if (MIDP.sendKeyPress) MIDP.sendKeyPress(code);
+      } else {
+        if (MIDP.sendKeyRelease) MIDP.sendKeyRelease(code);
+      }
+    }
+
+    function handleKeyDown(code, key, directCode = null) {
+      const j2meCode = directCode !== null ? directCode : (keyMapping[code] || keyMapping[key]);
+      if (j2meCode === undefined) {
+        if (key && key.length === 1 && !key.ctrlKey && !key.altKey && !key.metaKey) {
+          const charCode = key.charCodeAt(0);
+          sendKey(charCode, true);
+        }
+        return;
+      }
+
+      // If key is already registered as active, ignore OS repeated keydown events
+      if (activeKeys.has(code)) {
+        return;
+      }
+
+      // Check if this key forms a diagonal with an already held directional key
+      if (IS_DIRECTIONAL(j2meCode)) {
+        let existingDirEntry = null;
+        for (const entry of activeKeys.values()) {
+          if (IS_DIRECTIONAL(entry.j2meCode)) {
+            existingDirEntry = entry;
+            break;
+          }
+        }
+
+        if (existingDirEntry) {
+          const diagCode = DIAG_MAP[existingDirEntry.j2meCode + ',' + j2meCode];
+          if (diagCode) {
+            // Cancel competing repeat timers on both directional keys so they never fight!
+            if (existingDirEntry.delayTimer) clearTimeout(existingDirEntry.delayTimer);
+            if (existingDirEntry.repeatTimer) clearInterval(existingDirEntry.repeatTimer);
+
+            // Register this new key
+            activeKeys.set(code, { j2meCode, delayTimer: null, repeatTimer: null });
+
+            // Send this directional key
+            sendKey(j2meCode, true);
+
+            // Synthesize and send the native 8-way diagonal key!
+            if (activeDiagonal && activeDiagonal !== diagCode) {
+              sendKey(activeDiagonal, false);
+            }
+            activeDiagonal = diagCode;
+            sendKey(diagCode, true);
+            return;
+          }
+        }
+      }
+
+      // Single key (non-directional or first directional key)
+      sendKey(j2meCode, true);
+
+      // Setup typematic repeat for single-key navigation (menus / lists)
+      const entry = {
+        j2meCode,
+        delayTimer: null,
+        repeatTimer: null
+      };
+
+      entry.delayTimer = setTimeout(() => {
+        // Do not repeat if a diagonal chord is active!
+        if (activeDiagonal) return;
+        sendKey(j2meCode, true);
+        entry.repeatTimer = setInterval(() => {
+          if (activeDiagonal) return;
+          sendKey(j2meCode, true);
+        }, KEY_REPEAT_RATE);
+      }, KEY_REPEAT_DELAY);
+
+      activeKeys.set(code, entry);
+    }
+
+    function handleKeyUp(code, key, directCode = null) {
+      const j2meCode = directCode !== null ? directCode : (keyMapping[code] || keyMapping[key]);
+      const entry = activeKeys.get(code);
+
+      if (entry) {
+        if (entry.delayTimer) clearTimeout(entry.delayTimer);
+        if (entry.repeatTimer) clearInterval(entry.repeatTimer);
+        activeKeys.delete(code);
+
+        // If this key was part of an active diagonal, release the diagonal key
+        if (activeDiagonal && IS_DIRECTIONAL(entry.j2meCode)) {
+          sendKey(activeDiagonal, false);
+          activeDiagonal = null;
+        }
+
+        // Send release for this key
+        sendKey(entry.j2meCode, false);
+      } else if (j2meCode !== undefined) {
+        sendKey(j2meCode, false);
+      } else if (key && key.length === 1) {
+        sendKey(key.charCodeAt(0), false);
+      }
+
+      // CRITICAL FIX FOR MULTI-KEY ROLLOVER:
+      if (activeKeys.size > 0) {
+        const remainingDirs = [];
+        for (const otherEntry of activeKeys.values()) {
+          if (IS_DIRECTIONAL(otherEntry.j2meCode)) {
+            remainingDirs.push(otherEntry);
+          }
+        }
+
+        // If 2 directional keys still remain, form the diagonal between them
+        if (remainingDirs.length >= 2) {
+          const diagCode = DIAG_MAP[remainingDirs[0].j2meCode + ',' + remainingDirs[1].j2meCode];
+          if (diagCode) {
+            activeDiagonal = diagCode;
+            sendKey(diagCode, true);
+          }
+        } else if (remainingDirs.length === 1) {
+          // Exactly 1 directional key remains (e.g. user released 'W' while still holding 'A')
+          // Re-assert it cleanly so the game continues moving seamlessly in that direction!
+          sendKey(remainingDirs[0].j2meCode, true);
+        }
+
+        // Re-assert any other non-directional held keys (e.g. Action/Fire)
+        for (const otherEntry of activeKeys.values()) {
+          if (!IS_DIRECTIONAL(otherEntry.j2meCode)) {
+            sendKey(otherEntry.j2meCode, true);
+          }
+        }
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      // If native text-editor is active, allow standard typing
+      if (document.activeElement && document.activeElement.classList.contains('text-editor')) {
+        return;
+      }
+
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+        e.preventDefault();
+      }
+
+      if (e.key === 'F10') {
+        window.parent.postMessage({ type: 'toggle-pip' }, '*');
+        return;
+      }
+
+      handleKeyDown(e.code, e.key);
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (document.activeElement && document.activeElement.classList.contains('text-editor')) {
+        return;
+      }
+
+      handleKeyUp(e.code, e.key);
+    });
+
+    window.addEventListener('blur', () => {
+      // Clear diagonal
+      if (activeDiagonal) {
+        sendKey(activeDiagonal, false);
+        activeDiagonal = null;
+      }
+      // Clear all repeat timers and release keys on blur
+      for (const entry of activeKeys.values()) {
+        if (entry.delayTimer) clearTimeout(entry.delayTimer);
+        if (entry.repeatTimer) clearInterval(entry.repeatTimer);
+        sendKey(entry.j2meCode, false);
+      }
+      activeKeys.clear();
+    });
+
+    window.addEventListener('message', (e) => {
+      const msg = e.data;
+      if (!msg || !msg.type) return;
+
+      switch (msg.type) {
+        case 'type-string':
+          if (msg.text) {
+            const activeEditor = document.querySelector('.text-editor.show');
+            if (activeEditor) {
+              if (activeEditor.tagName === 'INPUT') {
+                activeEditor.value = msg.text;
+                activeEditor.dispatchEvent(new Event('input', { bubbles: true }));
+              } else {
+                activeEditor.textContent = msg.text;
+                activeEditor.dispatchEvent(new Event('input', { bubbles: true }));
+              }
+            } else {
+              for (let i = 0; i < msg.text.length; i++) {
+                const charCode = msg.text.charCodeAt(i);
+                setTimeout(() => {
+                  sendKey(charCode, true);
+                  setTimeout(() => sendKey(charCode, false), 35);
+                }, i * 75);
+              }
+            }
+          }
+          break;
+
+        case 'type-t9-sequence':
+          if (Array.isArray(msg.steps)) {
+            let delay = 0;
+            for (const step of msg.steps) {
+              setTimeout(() => {
+                sendKey(step.code, true);
+                setTimeout(() => sendKey(step.code, false), 45);
+              }, delay);
+              delay += step.wait || 130;
+            }
+          }
+          break;
+        case 'key-press':
+          if (IS_DIRECTIONAL(msg.code)) {
+            handleKeyDown('msg_' + msg.code, null, msg.code);
+          } else {
+            sendKey(msg.code, true);
+          }
+          break;
+
+        case 'key-release':
+          if (IS_DIRECTIONAL(msg.code)) {
+            handleKeyUp('msg_' + msg.code, null, msg.code);
+          } else {
+            sendKey(msg.code, false);
+          }
+          break;
+
+        case 'update-keymap':
+          if (msg.keymap) keyMapping = { ...keyMapping, ...msg.keymap };
+          break;
+
+        case 'set-filter':
+          document.body.classList.remove('filter-smooth', 'shader-lcd', 'shader-crt');
+          if (msg.filter === 'smooth') document.body.classList.add('filter-smooth');
+          if (msg.shader === 'lcd') document.body.classList.add('shader-lcd');
+          if (msg.shader === 'crt') document.body.classList.add('shader-crt');
+          break;
+
+        case 'focus-canvas':
+          focusGameCanvas();
+          break;
+
+        case 'request-screenshot':
+          const canvas = document.getElementById('canvas');
+          if (canvas) {
+            try {
+              const dataUrl = canvas.toDataURL('image/png');
+              window.parent.postMessage({ type: 'screenshot-ready', dataUrl }, '*');
+            } catch (err) {
+              console.error('Screenshot error:', err);
+            }
+          }
+          break;
+
+        case 'set-rotation':
+          const mainEl = document.getElementById('main');
+          if (mainEl) {
+            const rotation = Number(msg.rotation) || 0;
+            const quarterTurn = rotation === 90 || rotation === 270;
+            document.body.classList.toggle('rotation-quarter', quarterTurn);
+            mainEl.style.transform = `${quarterTurn ? 'translate(-50%, -50%) ' : ''}rotate(${rotation}deg)`;
+          }
+          break;
+
+        case 'set-volume':
+          window.setEmulatorVolume(msg.volume, msg.muted);
+          break;
+
+        case 'flush-save':
+          flushRMS();
+          break;
+      }
+    });
+
+    // Automatic RMS Persistence: Flush in-memory file system to IndexedDB regularly
+    function flushRMS() {
+      try {
+        if (typeof fs !== 'undefined' && typeof fs.syncStore === 'function') {
+          fs.syncStore();
+        }
+      } catch (e) {}
+    }
+    window.flushRMS = flushRMS;
+
+    // Periodically commit RMS stores every 4 seconds
+    setInterval(flushRMS, 4000);
+    window.addEventListener('beforeunload', flushRMS);
+    window.addEventListener('pagehide', flushRMS);
+
+    // Forward helper shortcut keys and right-click to parent window
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab' || e.key === 'h' || e.key === 'H' || e.key === 'm' || e.key === 'M' ||
+          e.key === 'F10' || e.key === 'F12' || e.key === 'F5' || e.key === 'F8') {
+        window.parent.postMessage({ type: 'global-keydown', key: e.key, code: e.code }, '*');
+        if (e.key === 'Tab') {
+          e.preventDefault();
+        }
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'Tab' || e.key === 'h' || e.key === 'H') {
+        window.parent.postMessage({ type: 'global-keyup', key: e.key, code: e.code }, '*');
+        if (e.key === 'Tab') {
+          e.preventDefault();
+        }
+      }
+    });
+
+    window.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      window.parent.postMessage({ type: 'toggle-pip-menu' }, '*');
+    });
+
+    let lastReportedSize = '';
+    function checkAndReportSize() {
+      const canvas = document.getElementById('canvas');
+      if (canvas && canvas.hasAttribute('width') && canvas.hasAttribute('height') && canvas.width > 0 && canvas.height > 0) {
+        const sizeStr = `${canvas.width}x${canvas.height}`;
+        if (sizeStr !== lastReportedSize) {
+          lastReportedSize = sizeStr;
+          window.parent.postMessage({
+            type: 'canvas-resized',
+            width: canvas.width,
+            height: canvas.height
+          }, '*');
+        }
+      }
+    }
+
+    function focusGameCanvas() {
+      const canvas = document.getElementById('canvas');
+      if (canvas && document.activeElement !== canvas) {
+        canvas.focus();
+      }
+      window.focus();
+    }
+
+    window.addEventListener('pointerdown', focusGameCanvas);
+    window.addEventListener('click', focusGameCanvas);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      window.parent.postMessage({ type: 'player-ready' }, '*');
+
+      const canvas = document.getElementById('canvas');
+      if (canvas) {
+        const observer = new ResizeObserver(() => checkAndReportSize());
+        observer.observe(canvas);
+        setInterval(checkAndReportSize, 500);
+      }
+
+      setTimeout(() => {
+        canvas?.focus();
+      }, 500);
+    });
+  </script>
+</body>
+</html>

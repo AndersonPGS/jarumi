@@ -1,0 +1,674 @@
+--- upstream/bld/main-all.js
++++ jarumi/bld/main-all.js
+@@ -8,7 +8,7 @@
+ var enginemode='classesold.jar';
+ 
+ //是否是主页
+-var isIndex = window.location.href.indexOf('main.html')==-1;
++var isIndex = window.location.href.indexOf('main.html')==-1 && window.location.href.indexOf('player.html')==-1;
+ var isLoadJarFinished = false;
+ var myflushAll=undefined;
+ var mytitle="";
+@@ -399,7 +399,7 @@
+       value = "1.0";
+       break;
+     case "microedition.locale":
+-      value = navigator.language;
++      value = (typeof localStorage !== "undefined" && localStorage.getItem("jarumi_language")) || "pt-BR";
+       break;
+     case "microedition.platform":
+       value = config.platform ? config.platform : "Nokia503/14.0.4/java_runtime_version=Nokia_Asha_1_2";
+@@ -1568,6 +1568,13 @@
+       return null;
+     }
+     var entry = jar.directory[fileName];
++    if (!entry) {
++      if (fileName && fileName.length > 0 && fileName.charAt(0) === "/") {
++        entry = jar.directory[fileName.substring(1)];
++      } else if (fileName) {
++        entry = jar.directory["/" + fileName];
++      }
++    }
+     if (!entry) {
+       return null;
+     }
+@@ -3005,7 +3012,7 @@
+     this.changesToSync = new Map;
+     this.db = null;
+   };
+-  Store.DBNAME = "asyncStorage";
++  Store.DBNAME = "j2me_asyncStorage_v1";
+   Store.DBVERSION = 4;
+   Store.DBSTORENAME_1 = "keyvaluepairs";
+   Store.DBSTORENAME_2 = "fs";
+@@ -3103,6 +3110,15 @@
+     }.bind(this);
+     openreq.onsuccess = function() {
+       this.db = openreq.result;
++      if (!this.db.objectStoreNames.contains(Store.DBSTORENAME)) {
++        console.warn("fs4 not found in database, recreating database...");
++        this.db.close();
++        var delreq = indexedDB.deleteDatabase(Store.DBNAME);
++        delreq.onsuccess = function() {
++          Store.prototype.init.call(this, cb);
++        }.bind(this);
++        return;
++      }
+       var transaction = this.db.transaction(Store.DBSTORENAME, "readonly");
+       if (DEBUG_FS) {
+         console.log("getAll initiated");
+@@ -3470,6 +3486,7 @@
+   }
+   function flush(fd) {
+     var openedFile = openedFiles.get(fd);
++    if (!openedFile) return;
+     if (DEBUG_FS) {
+       console.log("fs flush " + openedFile.path);
+     }
+@@ -3482,7 +3499,7 @@
+     store.setItem(openedFile.path, openedFile.record);
+     openedFile.dirty = false;
+ 
+-    var datas = openedFiles;
++    var datas = Array.from(openedFiles.entries());
+     for (var i = 0; i < datas.length; i++) {   
+       var entry=datas[i];
+       if (!entry[1].dirty && entry[1].path === openedFile.path) {
+@@ -3493,7 +3510,7 @@
+     }
+   }
+   function flushAll() {
+-    var datas = openedFiles;
++    var datas = Array.from(openedFiles.entries());
+     for (var i = 0; i < datas.length; i++) {   
+       var entry=datas[i];
+       if (entry[1].dirty) {
+@@ -3503,7 +3520,7 @@
+     syncStore();
+   }
+   function flushAllRms() { 
+-    var datas = openedFiles;
++    var datas = Array.from(openedFiles.entries());
+     for (var i = 0; i < datas.length; i++) {   
+       var entry=datas[i];
+       if (entry[1].dirty && entry[1].path.startsWith(RECORD_STORE_BASE))  {
+@@ -6403,19 +6420,47 @@
+     var isFullscreen = FG.isFullscreen();
+     //sidebar.style.display = header.style.display = isFullscreen ? "none" : "block";
+     var headerHeight = isFullscreen ? 0 : header.offsetHeight;
+-    var newHeight = physicalScreenHeight - headerHeight;
+-    var newWidth = physicalScreenWidth;
+-    if (newHeight != deviceCanvas.height || newWidth != deviceCanvas.width) {
+-      deviceCanvas.height = newHeight;
+-      deviceCanvas.width = newWidth;
++    var targetHeight = physicalScreenHeight - headerHeight;
++    var targetWidth = physicalScreenWidth;
++
++    if (config.canvasSize && config.canvasSize != "size-no") {
++      try {
++        var canx = parseInt(config.canvasSize.split("-")[1].split("x")[0], 10);
++        var cany = parseInt(config.canvasSize.split("-")[1].split("x")[1], 10);
++        targetWidth = canx;
++        targetHeight = cany;
++        lcdWidth = canx;
++        lcdHeight = cany;
++      } catch (err) {}
++    }
++
++    if (targetHeight != deviceCanvas.height || targetWidth != deviceCanvas.width) {
++      var snapshot = null;
++      if (typeof offscreenCanvas !== "undefined" && offscreenCanvas && offscreenCanvas.width > 0 && offscreenCanvas.height > 0) {
++        snapshot = document.createElement("canvas");
++        snapshot.width = offscreenCanvas.width;
++        snapshot.height = offscreenCanvas.height;
++        snapshot.getContext("2d").drawImage(offscreenCanvas, 0, 0);
++      } else if (deviceCanvas.width > 0 && deviceCanvas.height > 0) {
++        snapshot = document.createElement("canvas");
++        snapshot.width = deviceCanvas.width;
++        snapshot.height = deviceCanvas.height;
++        snapshot.getContext("2d").drawImage(deviceCanvas, 0, 0);
++      }
++      deviceCanvas.height = targetHeight;
++      deviceCanvas.width = targetWidth;
+       deviceCanvas.style.height = deviceCanvas.height + "px";
+       deviceCanvas.style.width = deviceCanvas.width + "px";
+       deviceCanvas.style.top = headerHeight + "px";
+-      try{
+-      deviceCanvas.dispatchEvent(new Event("canvasresize"));
+-      }catch(err)
+-      {
+-        console.log(err)
++      try {
++        deviceCanvas.dispatchEvent(new Event("canvasresize"));
++      } catch (err) {
++        console.log(err);
++      }
++      if (snapshot && typeof MIDP !== "undefined" && MIDP.deviceContext) {
++        MIDP.deviceContext.drawImage(snapshot, 0, 0);
++      } else if (typeof offscreenCanvas !== "undefined" && offscreenCanvas && offscreenCanvas.width > 0) {
++        MIDP.deviceContext.drawImage(offscreenCanvas, 0, 0);
+       }
+     }
+     //console.log(config.canvasSize);
+@@ -6424,22 +6469,7 @@
+       try{
+         if(config.canvasSize!="size-no")
+         {
+-          var canx =parseInt(config.canvasSize.split("-")[1].split("x")[0]);
+-          var cany =parseInt(config.canvasSize.split("-")[1].split("x")[1]);
+-
+-          lcdWidth=canx;
+-          lcdHeight = cany;
+-
+-            deviceCanvas.height = cany;
+-            deviceCanvas.width = canx;
+-            deviceCanvas.style.height = deviceCanvas.height + "px";
+-            deviceCanvas.style.width = deviceCanvas.width + "px";
+-            deviceCanvas.style.top = headerHeight + "px";
+-            try{
+-            deviceCanvas.dispatchEvent(new Event("canvasresize")); 
+-          }catch(err){
+-            console.log(err);
+-          }
++          // Logical dimensions already set above without double-wiping
+         } 
+         else{
+             var canx ="100%";
+@@ -6458,7 +6488,6 @@
+       {
+         
+       }
+-     
+         if(config.gameresize)
+         {
+             var sca = 1;
+@@ -6649,7 +6678,7 @@
+         value = "71";
+         break;
+       case "microedition.locale":
+-        value = navigator.language;
++        value = (typeof localStorage !== "undefined" && localStorage.getItem("jarumi_language")) || "pt-BR";
+         break;
+       case "datagram":
+         value = "com.sun.midp.io.j2me.datagram.ProtocolPushImpl";
+@@ -8265,10 +8294,26 @@
+   var offscreenContext2D = offscreenCanvas.getContext("2d");
+   var screenContextInfo = new ContextInfo(offscreenContext2D);
+   MIDP.deviceContext.canvas.addEventListener("canvasresize", function() {
+-    offscreenCanvas.width = MIDP.deviceContext.canvas.width;
+-    offscreenCanvas.height = MIDP.deviceContext.canvas.height;
++    var newW = MIDP.deviceContext.canvas.width;
++    var newH = MIDP.deviceContext.canvas.height;
++    if (offscreenCanvas.width === newW && offscreenCanvas.height === newH) {
++      return;
++    }
++    var snapshot = null;
++    if (offscreenCanvas.width > 0 && offscreenCanvas.height > 0) {
++      snapshot = document.createElement("canvas");
++      snapshot.width = offscreenCanvas.width;
++      snapshot.height = offscreenCanvas.height;
++      snapshot.getContext("2d").drawImage(offscreenCanvas, 0, 0);
++    }
++    offscreenCanvas.width = newW;
++    offscreenCanvas.height = newH;
+     screenContextInfo.currentlyAppliedGraphicsInfo = null;
+     offscreenContext2D.save();
++    if (snapshot) {
++      offscreenContext2D.drawImage(snapshot, 0, 0);
++      MIDP.deviceContext.drawImage(offscreenCanvas, 0, 0);
++    }
+   });
+   var tempContext = document.createElement("canvas").getContext("2d");
+   tempContext.canvas.width = 0;
+@@ -8343,10 +8388,17 @@
+       return;
+     }
+     var ctx = $.ctx;
+-    window.requestAnimationFrame(function() {
+-      MIDP.deviceContext.drawImage(offscreenCanvas, x1, y1, width, height, x1, y1, width, height); 
++    var scheduled = false;
++    function doRefresh() {
++      if (scheduled) return;
++      scheduled = true;
++      try {
++        MIDP.deviceContext.drawImage(offscreenCanvas, 0, 0);
++      } catch (err) {}
+       J2ME.Scheduler.enqueue(ctx);
+-    });
++    }
++    window.requestAnimationFrame(doRefresh);
++    setTimeout(doRefresh, 100);
+     $.pause(refreshStr);
+     $.nativeBailout(J2ME.Kind.Void);
+   };
+@@ -8429,19 +8481,40 @@
+     var bytes = J2ME.getArrayFromAddr(bytesAddr);
+     var ctx = $.ctx;
+     asyncImpl("V", new Promise(function(resolve, reject) {
++      if (!bytes || length <= 0) {
++        initImageData(imageDataAddr, 1, 1, 0);
++        resolve();
++        return;
++      }
+       var blob = new Blob([bytes.subarray(offset, offset + length)], {type:"image/png"});
+       var img = new Image;
++      var resolved = false;
++      var timer = setTimeout(function() {
++        if (!resolved) {
++          resolved = true;
++          console.warn("[ImageDataFactory] Image decoding timeout, fallback to blank 1x1 image");
++          initImageData(imageDataAddr, 1, 1, 0);
++          resolve();
++        }
++      }, 2000);
+       img.src = URL.createObjectURL(blob);
+       img.onload = function() {
+-        var context = initImageData(imageDataAddr, img.naturalWidth, img.naturalHeight, 0);
++        if (resolved) return;
++        resolved = true;
++        clearTimeout(timer);
++        var context = initImageData(imageDataAddr, img.naturalWidth || 1, img.naturalHeight || 1, 0);
+         context.drawImage(img, 0, 0);
+         URL.revokeObjectURL(img.src);
+         resolve();
+       };
+       img.onerror = function(e) {
++        if (resolved) return;
++        resolved = true;
++        clearTimeout(timer);
+         URL.revokeObjectURL(img.src);
+-        ctx.setAsCurrentContext();
+-        reject($.newIllegalArgumentException("error decoding image"));
++        console.warn("[ImageDataFactory] Image decode error, fallback to blank 1x1 image");
++        initImageData(imageDataAddr, 1, 1, 0);
++        resolve();
+       };
+     }));
+   };
+@@ -8482,11 +8555,15 @@
+     context.fillRect(0, 0, width, height);
+   };
+   Native["javax/microedition/lcdui/ImageDataFactory.createImmutableImageDecodeRGBImage.(Ljavax/microedition/lcdui/ImageData;[IIIZ)V"] = function(addr, imageDataAddr, rgbDataAddr, width, height, processAlpha) {
++    if (width <= 0 || height <= 0) {
++      initImageData(imageDataAddr, 1, 1, 0);
++      return;
++    }
+     var rgbData = J2ME.getArrayFromAddr(rgbDataAddr);
+     var context = initImageData(imageDataAddr, width, height, 0);
+     var ctxImageData = context.createImageData(width, height);
+     var abgrData = new Int32Array(ctxImageData.data.buffer);
+-    if (1 === processAlpha) {
++    if (processAlpha) {
+       ARGBToABGR(rgbData, abgrData, width, height, 0, width);
+     } else {
+       ARGBTo1BGR(rgbData, abgrData, width, height, 0, width);
+@@ -9018,10 +9095,10 @@
+     var newY1 = y + this.transY;
+     var newX2 = newX1 + width;
+     var newY2 = newY1 + height;
+-    newX1 = Math.max(minX, newX1) & 32767;
+-    newY1 = Math.max(minY, newY1) & 32767;
+-    newX2 = Math.min(maxX, newX2) & 32767;
+-    newY2 = Math.min(maxY, newY2) & 32767;
++    newX1 = Math.max(minX, newX1);
++    newY1 = Math.max(minY, newY1);
++    newX2 = Math.min(maxX, newX2);
++    newY2 = Math.min(maxY, newY2);
+     if (width <= 0 || height <= 0 || newX2 <= newX1 || newY2 <= newY1) {
+       newX1 = newY1 = newX2 = newY2 = 0;
+     }
+@@ -9212,24 +9289,30 @@
+   var TRANS_ROT270 = 6;
+   var TRANS_MIRROR_ROT90 = 7;
+   function renderRegion(dstContext, srcCanvas, sx, sy, sw, sh, transform, absX, absY, anchor) {
++    if (!dstContext || !srcCanvas) return;
++    if (sw <= 0 || sh <= 0) return;
++    if (srcCanvas.width <= 0 || srcCanvas.height <= 0) return;
++
++    // Clamp source sub-rectangle to prevent HTML5 Canvas IndexSizeError
++    if (sx < 0) { sw += sx; absX -= sx; sx = 0; }
++    if (sy < 0) { sh += sy; absY -= sy; sy = 0; }
++    if (sx >= srcCanvas.width || sy >= srcCanvas.height) return;
++    if (sx + sw > srcCanvas.width) { sw = srcCanvas.width - sx; }
++    if (sy + sh > srcCanvas.height) { sh = srcCanvas.height - sy; }
++    if (sw <= 0 || sh <= 0) return;
++
+     var w, h;
+     switch(transform) {
+       case TRANS_NONE:
+-      ;
+       case TRANS_ROT180:
+-      ;
+       case TRANS_MIRROR:
+-      ;
+       case TRANS_MIRROR_ROT180:
+         w = sw;
+         h = sh;
+         break;
+       case TRANS_ROT90:
+-      ;
+       case TRANS_ROT270:
+-      ;
+       case TRANS_MIRROR_ROT90:
+-      ;
+       case TRANS_MIRROR_ROT270:
+         w = sh;
+         h = sw;
+@@ -9237,92 +9320,69 @@
+     }
+     if (0 !== (anchor & HCENTER)) {
+       absX -= w >>> 1 | 0;
+-    } else {
+-      if (0 !== (anchor & RIGHT)) {
+-        absX -= w;
+-      }
++    } else if (0 !== (anchor & RIGHT)) {
++      absX -= w;
+     }
+     if (0 !== (anchor & VCENTER)) {
+       absY -= h >>> 1 | 0;
+-    } else {
+-      if (0 !== (anchor & BOTTOM)) {
+-        absY -= h;
+-      }
+-    }
+-    var x, y;
+-    switch(transform) {
+-      case TRANS_NONE:
+-        x = absX;
+-        y = absY;
+-        break;
+-      case TRANS_ROT90:
+-        dstContext.rotate(Math.PI / 2);
+-        x = absY;
+-        y = -absX - w;
+-        break;
+-      case TRANS_ROT180:
+-        dstContext.rotate(Math.PI);
+-        x = -absX - w;
+-        y = -absY - h;
+-        break;
+-      case TRANS_ROT270:
+-        dstContext.rotate(Math.PI * 1.5);
+-        x = -absY - h;
+-        y = absX;
+-        break;
+-      case TRANS_MIRROR:
+-        dstContext.scale(-1, 1);
+-        x = -absX - w;
+-        y = absY;
+-        break;
+-      case TRANS_MIRROR_ROT90:
+-        dstContext.rotate(Math.PI / 2);
+-        dstContext.scale(-1, 1);
+-        x = -absY - h;
+-        y = -absX - w;
+-        break;
+-      case TRANS_MIRROR_ROT180:
+-        dstContext.scale(1, -1);
+-        x = absX;
+-        y = -absY - h;
+-        break;
+-      case TRANS_MIRROR_ROT270:
+-        dstContext.rotate(Math.PI * 1.5);
+-        dstContext.scale(-1, 1);
+-        x = absY;
+-        y = absX;
+-        break;
+-    }
+-    dstContext.drawImage(srcCanvas, sx, sy, sw, sh, x, y, sw, sh);
+-    switch(transform) {
+-      case TRANS_NONE:
+-        break;
+-      case TRANS_ROT90:
+-        dstContext.rotate(Math.PI * 1.5);
+-        break;
+-      case TRANS_ROT180:
+-        dstContext.rotate(Math.PI);
+-        break;
+-      case TRANS_ROT270:
+-        dstContext.rotate(Math.PI / 2);
+-        break;
+-      case TRANS_MIRROR:
+-        dstContext.scale(-1, 1);
+-        break;
+-      case TRANS_MIRROR_ROT90:
+-        dstContext.scale(-1, 1);
+-        dstContext.rotate(Math.PI * 1.5);
+-        break;
+-      case TRANS_MIRROR_ROT180:
+-        dstContext.scale(1, -1);
+-        break;
+-      case TRANS_MIRROR_ROT270:
+-        dstContext.scale(-1, 1);
+-        dstContext.rotate(Math.PI / 2);
+-        break;
+-    }
+-  }
+-  Native["javax/microedition/lcdui/Graphics.drawLine.(IIII)V"] = function(addr, x1, y1, x2, y2) {
++    } else if (0 !== (anchor & BOTTOM)) {
++      absY -= h;
++    }
++
++    dstContext.save();
++    try {
++      var x, y;
++      switch(transform) {
++        case TRANS_NONE:
++          x = absX;
++          y = absY;
++          break;
++        case TRANS_ROT90:
++          dstContext.rotate(Math.PI / 2);
++          x = absY;
++          y = -absX - w;
++          break;
++        case TRANS_ROT180:
++          dstContext.rotate(Math.PI);
++          x = -absX - w;
++          y = -absY - h;
++          break;
++        case TRANS_ROT270:
++          dstContext.rotate(Math.PI * 1.5);
++          x = -absY - h;
++          y = absX;
++          break;
++        case TRANS_MIRROR:
++          dstContext.scale(-1, 1);
++          x = -absX - w;
++          y = absY;
++          break;
++        case TRANS_MIRROR_ROT90:
++          dstContext.rotate(Math.PI / 2);
++          dstContext.scale(-1, 1);
++          x = -absY - h;
++          y = -absX - w;
++          break;
++        case TRANS_MIRROR_ROT180:
++          dstContext.scale(1, -1);
++          x = absX;
++          y = -absY - h;
++          break;
++        case TRANS_MIRROR_ROT270:
++          dstContext.rotate(Math.PI * 1.5);
++          dstContext.scale(-1, 1);
++          x = absY;
++          y = absX;
++          break;
++      }
++      dstContext.drawImage(srcCanvas, sx, sy, sw, sh, x, y, sw, sh);
++    } catch (e) {
++      // Protect the paint loop from unhandled Canvas errors
++    } finally {
++      dstContext.restore();
++    }
++  }
++    Native["javax/microedition/lcdui/Graphics.drawLine.(IIII)V"] = function(addr, x1, y1, x2, y2) {
+     var c = NativeMap.get(addr).getGraphicsContext();
+     if (x1 === x2) {
+       x1 += .5;
+@@ -9339,12 +9399,13 @@
+     c.closePath();
+   };
+   Native["javax/microedition/lcdui/Graphics.drawRGB.([IIIIIIIZ)V"] = function(addr, rgbDataAddr, offset, scanlength, x, y, width, height, processAlpha) { 
++    if (width <= 0 || height <= 0) return;
+     var rgbData = J2ME.getArrayFromAddr(rgbDataAddr);
+     tempContext.canvas.height = height;
+     tempContext.canvas.width = width;
+     var imageData = tempContext.createImageData(width, height);
+     var abgrData = new Int32Array(imageData.data.buffer);
+-    if (1 === processAlpha) {
++    if (processAlpha) {
+       ARGBToABGR(rgbData, abgrData, width, height, offset, scanlength);
+     } else {
+       ARGBTo1BGR(rgbData, abgrData, width, height, offset, scanlength);
+@@ -12666,14 +12727,12 @@
+ 
+ PlayerContainer.prototype.writeBuffer = function(buffer,resolve,bufferSize) {
+   try{
+-  //console.log("writeBuffer");
+   if (this.contentSize === 0) {
+     this.data = new Int8Array(this.getBufferSize());
+   }
+   this.data.set(buffer, this.contentSize);
+   this.contentSize += buffer.length;
+   var uint8 = new Uint8Array(buffer).buffer;
+-  //console.log("buffer.length",buffer.length,bufferSize)
+ 
+   if(this.getMediaFormat()!='mid')
+   {  
+@@ -12682,54 +12741,55 @@
+       this.amr = new BenzAMRRecorder();
+       this.amr.initWithArrayBuffer(uint8).then(function(){ 
+         resolve(bufferSize);
++      }).catch(function(err){
++        console.warn("[Media] AMR init error:", err);
++        resolve(bufferSize);
+       }); 
+       return;
+     }
+     //非mid播放器
+     this.tinysynth = null; 
+     var that=this;  
+-     this.audioCtx.decodeAudioData(uint8, function(buffer) {
+-              //console.log('1231231231231')
+-              //console.log(buffer.length)
+-              that.playSound(buffer);
+-              // if(that.wholeContentSize<=that.contentSize)
+-              // { 
+-                resolve(that.contentSize);
+-              // }
+-          }, function() {
+-              console.log('error');
+-              resolve(that.contentSize);
+-          }
+-          ); 
+-    // while(true)
+-    // {
+-    //   //伪同步
+-    //   if(this.wavBuffer)
+-    //   {
+-    //     break;
+-    //   }
+-    //   sleep(1);
+-    // }
+-      return;
++    if (this.audioCtx && this.audioCtx.decodeAudioData) {
++      this.audioCtx.decodeAudioData(uint8, function(buf) {
++        that.playSound(buf);
++        resolve(that.contentSize);
++      }, function() {
++        console.log('error decoding audio data');
++        resolve(that.contentSize);
++      });
++    } else {
++      resolve(bufferSize);
++    }
++    return;
+   }
+   if(midimode==1)
+   {  
+     console.log('pAudio is removed!');
++    resolve(bufferSize);
+   }
+   else if(midimode==2){
+     if(this.tinysynth)
+     { 
+-      this.tinysynth.loadMIDI(uint8);
+-      resolve(bufferSize);
+-    }
++      try {
++        this.tinysynth.loadMIDI(uint8);
++      } catch (err) {
++        console.warn("[Media] loadMIDI error:", err);
++      }
++    }
++    resolve(bufferSize);
+   }  
+   else if(midimode==3){
+     if(this.audio)
+     { 
+-      var blob=new Blob([uint8],{"type":"audio/mid"});   
+-      this.audio.src = URL.createObjectURL(blob);
+-      resolve(bufferSize);
+-    }
++      try {
++        var blob=new Blob([uint8],{"type":"audio/mid"});   
++        this.audio.src = URL.createObjectURL(blob);
++      } catch (err) {}
++    }
++    resolve(bufferSize);
++  } else {
++    resolve(bufferSize);
+   }  
+ }
+   catch(err)
+@@ -13159,8 +13219,30 @@
+   var buffer = J2ME.getArrayFromAddr(bufferAddr);
+ 
+   asyncImpl("I", new Promise(function(resolve, reject) {
++    var resolved = false;
++    var timer = setTimeout(function() {
++      if (!resolved) {
++        resolved = true;
++        console.warn("[MediaDownload] buffering watchdog timed out, resuming thread");
++        resolve(bufferSize);
++      }
++    }, 1500);
+     setTimeout(function() { 
+-        player.writeBuffer(buffer.subarray(offset, offset + size),resolve,bufferSize);
++      try {
++        player.writeBuffer(buffer.subarray(offset, offset + size), function(res) {
++          if (!resolved) {
++            resolved = true;
++            clearTimeout(timer);
++            resolve(res !== undefined ? res : bufferSize);
++          }
++        }, bufferSize);
++      } catch (err) {
++        if (!resolved) {
++          resolved = true;
++          clearTimeout(timer);
++          resolve(bufferSize);
++        }
++      }
+     });
+   }));  
+ };
+@@ -14429,12 +14511,11 @@
+       {
+         return;
+       }
+-      if(JARStore.getjars().length > 1 && !isIndex)
+-      {
+-        console.log('开始执行jars'); 
++      if (JARStore.getjars().length > 1 && !isIndex) {
++        console.log('Starting game execution: JAR ready');
+         run();
+-      } 
+-      clearInterval(interval);
++        clearInterval(interval);
++      }
+     }, 100); 
+   }
+   function run() {

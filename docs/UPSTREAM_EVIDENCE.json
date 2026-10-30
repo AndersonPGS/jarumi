@@ -1,0 +1,139 @@
+[
+  {
+    "repo": "Rosabis/J2meJS",
+    "commit": "75947c10412c7ff9927835a128b653696f402e9d",
+    "githubLicense": {
+      "key": "gpl-2.0",
+      "name": "GNU General Public License v2.0",
+      "spdx_id": "GPL-2.0",
+      "url": "https://api.github.com/licenses/gpl-2.0",
+      "node_id": "MDc6TGljZW5zZTg="
+    },
+    "evidence": [
+      {
+        "path": "LICENSE",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/LICENSE",
+        "sha256": "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6",
+        "excerpt": "                    GNU GENERAL PUBLIC LICENSE\n                       Version 2, June 1991\n\n Copyright (C) 1989, 1991 Free Software Foundation, Inc.,\n <https://fsf.org/>\n Everyone is permitted to copy and distribute verbatim copies\n of this license document, but changing it is not allowed.\n\n                            Preamble\n\n  The licenses for m"
+      },
+      {
+        "path": "README.md",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/README.md",
+        "sha256": "cd271e2accc500bca6928d57e1b8d28ffb4d2ff9d0d494331f6abfeaea1bd8ac"
+      },
+      {
+        "path": "java/bld/j2me.js",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/java/bld/j2me.js",
+        "sha256": "e91382215e78d1b103a8e0a3cc9484e3b7304e25fdf18baefa3bdfb9bfbb8bc8",
+        "matchesLocal": false
+      },
+      {
+        "path": "java/bld/main-all.js",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/java/bld/main-all.js",
+        "sha256": "b9b2ac43b2945137fd5c959e71ef368a9abd5567643233a11c7301b3debbd0e9",
+        "matchesLocal": false
+      },
+      {
+        "path": "java/java/classes.jar",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/java/java/classes.jar",
+        "sha256": "018bcccde14f67c4cf5a0e7bee56979e9427e5649c1dd0aaf48c593d42f56f7c",
+        "matchesLocal": true,
+        "sharedEntries": 1778,
+        "matchingEntries": 1778,
+        "localEntries": 1778
+      },
+      {
+        "path": "java/java/classesold.jar",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/java/java/classesold.jar",
+        "sha256": "ec509916df95c2d0f7724405c4a8063501a3a8663b87498178e9c6c46eb10f2d",
+        "matchesLocal": true,
+        "sharedEntries": 1767,
+        "matchingEntries": 1767,
+        "localEntries": 1767
+      },
+      {
+        "path": "kaios/bld/j2me.js",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/kaios/bld/j2me.js",
+        "sha256": "da1bb3c1324b889b5b3301655c9192fb59b28d80b5a4fccde8781f6e5460c1dc",
+        "matchesLocal": false
+      },
+      {
+        "path": "kaios/bld/main-all.js",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/kaios/bld/main-all.js",
+        "sha256": "458d080ad52df845bee9f99f32f43a63a345bd2b46cd73ba1ce8efb77907d240",
+        "matchesLocal": false
+      },
+      {
+        "path": "kaios/java/classes.jar",
+        "source": "https://raw.githubusercontent.com/Rosabis/J2meJS/75947c10412c7ff9927835a128b653696f402e9d/kaios/java/classes.jar",
+        "sha256": "353c8cb2aa46b240b1bfe07b8232b3fc469c484b679301040ea5cbc88c5b8a39",
+        "matchesLocal": false,
+        "sharedEntries": 1767,
+        "matchingEntries": 1452,
+        "localEntries": 1778
+      }
+    ]
+  },
+  {
+    "repo": "mozilla/pluotsorbet",
+    "commit": "46ee3e78a4fd9c3f09026cc5cbdcf76e94b7a398",
+    "githubLicense": {
+      "key": "gpl-2.0",
+      "name": "GNU General Public License v2.0",
+      "spdx_id": "GPL-2.0",
+      "url": "https://api.github.com/licenses/gpl-2.0",
+      "node_id": "MDc6TGljZW5zZTg="
+    },
+    "evidence": [
+      {
+        "path": "LICENSE",
+        "source": "https://raw.githubusercontent.com/mozilla/pluotsorbet/46ee3e78a4fd9c3f09026cc5cbdcf76e94b7a398/LICENSE",
+        "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+        "excerpt": "                    GNU GENERAL PUBLIC LICENSE\n                       Version 2, June 1991\n\n Copyright (C) 1989, 1991 Free Software Foundation, Inc.,\n 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA\n Everyone is permitted to copy and distribute verbatim copies\n of this license document, but changing it is not allowed.\n\n                  "
+      },
+      {
+        "path": "README.md",
+        "source": "https://raw.githubusercontent.com/mozilla/pluotsorbet/46ee3e78a4fd9c3f09026cc5cbdcf76e94b7a398/README.md",
+        "sha256": "2cb7dc953e38abc1a665acfc9fb38a114f73aa8a5d1629ecf67735e99d9f03f9"
+      },
+      {
+        "path": "tests/support/README.md",
+        "source": "https://raw.githubusercontent.com/mozilla/pluotsorbet/46ee3e78a4fd9c3f09026cc5cbdcf76e94b7a398/tests/support/README.md",
+        "sha256": "06f66f2e052b3351ed19b3b8654c71d191e04a6622092cf600a43ff2ace3b77a"
+      }
+    ]
+  },
+  {
+    "repo": "hex007/freej2me",
+    "commit": "eb4ac87e9a0b212ba701691eb67ee4892b2b1173",
+    "githubLicense": {
+      "key": "other",
+      "name": "Other",
+      "spdx_id": "NOASSERTION",
+      "url": null,
+      "node_id": "MDc6TGljZW5zZTA="
+    },
+    "evidence": [
+      {
+        "path": "LICENSE",
+        "source": "https://raw.githubusercontent.com/hex007/freej2me/eb4ac87e9a0b212ba701691eb67ee4892b2b1173/LICENSE",
+        "sha256": "a58fa0122b525f1d9ae531781bfeead1977e9ac88d10fb570e8821d6e4232e85",
+        "excerpt": "FreeJ2ME depends on ObjectWeb ASM for some functionality.  ObjectWeb ASM is not\ncoverd by the GNU General Public License Version 3, nor does it provide you\nthe same rights.\n\n*******************************************************************************\nObjectWeb ASM License:\n*************************************************************************"
+      },
+      {
+        "path": "README.md",
+        "source": "https://raw.githubusercontent.com/hex007/freej2me/eb4ac87e9a0b212ba701691eb67ee4892b2b1173/README.md",
+        "sha256": "42f4a98b938fe408f91401e916e2cf2ad7133079ae24b2868bd7d293005ccf16"
+      },
+      {
+        "path": "src/org/recompile/mobile/Mobile.java",
+        "source": "https://raw.githubusercontent.com/hex007/freej2me/eb4ac87e9a0b212ba701691eb67ee4892b2b1173/src/org/recompile/mobile/Mobile.java",
+        "sha256": "21eb36d130f52d3fefe7c67b06a0a65b194faf68232d72aeeb5c99898494614a"
+      }
+    ]
+  },
+  {
+    "repo": "rupor-github/freej2me",
+    "error": "HTTP Error 404: Not Found"
+  }
+]

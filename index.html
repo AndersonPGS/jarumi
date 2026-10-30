@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Jarumi</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/jarumi.svg">
+  <link rel="alternate icon" href="assets/icons/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/handset.css">
+  <link rel="stylesheet" href="css/jarumi-system.css">
+  <link rel="stylesheet" href="css/device-art.css">
+  <link rel="stylesheet" href="css/fonts.css">
+</head>
+<body data-view="library">
+<div class="device-shell">
+  <div class="device-hardware"><span class="device-name">JARUMI<span> / J2ME</span></span><span class="device-speaker" aria-hidden="true"></span><span class="device-led" aria-hidden="true"></span></div>
+
+  <!-- Top Bar / Titlebar -->
+  <header id="titlebar">
+    <div class="titlebar-left"><button id="btn-home" class="screen-home" title="Tela inicial" aria-label="Tela inicial">⌂</button><button id="btn-back-settings" class="screen-home" title="Voltar para configurações" aria-label="Voltar para configurações">‹</button><span id="screen-title">INÍCIO</span><time id="jarumi-clock">--:--</time>
+      <div class="logo-badge">
+        <span class="brand-pixel">▦</span>
+        <span>JARUMI</span>
+        <span class="retro-tag">EMULATOR</span>
+      </div>
+      <div id="active-game-pill" class="active-game-pill hidden">
+        <span class="status-dot"></span>
+        <span id="active-game-title">Carregando...</span>
+      </div>
+    </div>
+
+    <div class="titlebar-center">
+      <!-- High-visibility PiP Button -->
+      <button id="btn-toggle-pip" class="btn-pip" title="Alternar Janela Flutuante (F10)">
+        ▣ <span>Flutuante</span>
+      </button>
+
+    </div>
+
+    <div class="titlebar-right"><span id="network-status" role="img" aria-label="Conexão"></span><span id="battery-status" role="img" hidden><span class="battery-fill"></span></span>
+      <button id="win-btn-min" class="window-btn" title="Minimizar">🗕</button>
+      <button id="win-btn-max" class="window-btn" title="Maximizar">🗖</button>
+      <button id="win-btn-close" class="window-btn close" title="Fechar">✕</button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs (Normal Mode) -->
+  <nav id="nav-tabs">
+    <button class="nav-tab active" data-view="player">
+      <span>▣</span> Jogar
+    </button>
+    <button class="nav-tab" data-view="library">
+      <span>▦</span> Jogos <span id="tab-library-badge" class="tab-badge">0</span>
+    </button>
+    <button class="nav-tab" data-view="controls">
+      <span>✥</span> Controles
+    </button>
+    <button class="nav-tab" data-view="video">
+      <span>▤</span> Tela
+    </button>
+    <button class="nav-tab" data-view="saves">
+      <span>▣</span> Saves
+    </button>
+  </nav>
+
+
+  <!-- Main Views Container -->
+  <main id="app-container">
+
+    <!-- VIEW: PLAYER (GAME VIEWPORT) -->
+    <section id="view-player" class="view-panel">
+      <div class="game-edge-zone game-edge-top"><button id="game-status-toggle" class="game-edge-tab" aria-label="Mostrar barra de status" aria-expanded="false" aria-controls="titlebar"><span aria-hidden="true"><svg viewBox="0 0 12 8"><path fill="currentColor" d="M0 0h2v2h2v2h4V2h2V0h2v4h-2v2H8v2H4V6H2V4H0z"/></svg></span></button></div>
+      <div class="game-edge-zone game-edge-bottom"><button id="game-task-toggle" class="game-edge-tab" aria-label="Mostrar barra de ações" aria-expanded="false" aria-controls="game-taskbar"><span aria-hidden="true"><svg viewBox="0 0 12 8"><path fill="currentColor" d="M0 0h2v2h2v2h4V2h2V0h2v4h-2v2H8v2H4V6H2V4H0z"/></svg></span></button></div>
+      <div class="pip-mini-bar" tabindex="0" role="toolbar" aria-label="Ações PiP">
+        <span class="pip-mini-grip" title="Arrastar janela" aria-hidden="true">⠿</span>
+        <button id="pip-menu-toggle-btn" aria-expanded="false" aria-controls="pip-floating-bar" title="Ajustes PiP" aria-label="Ajustes PiP"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M2 3h12v2H2z M2 7h12v2H2z M2 11h12v2H2z"/></svg></button>
+        <button id="pip-btn-restore" title="Voltar ao celular (F10)" aria-label="Sair do PiP"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 1h14v14H1z M3 3v10h10V3z M2 2h6v6H2z"/></svg></button>
+        <button id="pip-btn-type" title="Digitar no jogo" aria-label="Digitar no jogo"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 2h14v3H9v10H6V5H1z"/></svg></button>
+      </div>
+      <div id="pip-floating-bar" class="pip-floating-bar" role="dialog" aria-label="Ajustes PiP">
+        <div class="pip-panel-header"><span>Ajustes</span><button id="pip-btn-collapse" class="pip-pill-btn" aria-label="Fechar ajustes">×</button></div>
+        <label class="pip-control-label" for="pip-floating-volume">Volume</label>
+        <div class="pip-volume-pill"><button id="pip-btn-mute" class="pip-pill-btn" aria-label="Alternar áudio">Som</button><input type="range" id="pip-floating-volume" min="0" max="1" step="0.05" value="1" aria-label="Volume"></div>
+        <label class="pip-control-label" for="pip-floating-opacity">Transparência</label><input type="range" id="pip-floating-opacity" min="0.3" max="1" step="0.05" value="1" aria-label="Opacidade">
+        <button id="pip-btn-keymap" class="pip-pill-btn">Guia de teclas</button>
+      </div>
+
+      <!-- Responsive Game Viewport (fills 100% of space, locked to aspect ratio) -->
+      <div id="game-viewport-container">
+        <div id="game-frame-wrap">
+          <iframe id="game-iframe" src="about:blank" allow="autoplay"></iframe>
+        </div>
+      </div>
+
+      <!-- Retro Pixel Arcade Bottom Dock -->
+      <div id="game-taskbar" class="player-bottom-dock">
+        <!-- Cluster 1: Playback & Audio -->
+        <div class="dock-cluster dock-left">
+          <button id="btn-pause" class="pixel-btn btn-pause" title="Pausar / Retomar Emulação (Espaço)">
+            <span class="btn-icon">⏸</span> <span class="btn-label">PAUSAR</span>
+          </button>
+          <div class="dock-volume-wrap" title="Volume Geral">
+            <button id="dock-btn-mute" class="pixel-btn icon-only" title="Mutar / Ativar Som">🔊</button>
+            <input type="range" id="dock-volume-slider" class="volume-slider dock-vol-slider" min="0" max="1" step="0.05" value="0.8" title="Volume">
+            <span id="volume-badge" class="vol-percent-badge">80%</span>
+          </div>
+        </div>
+
+        <!-- Cluster 2: Core Gaming Actions -->
+        <div class="dock-cluster dock-center">
+          <button id="btn-show-type-dialog" class="pixel-btn btn-neon-cyan" title="Digitar Texto / Nome no Jogo (Auto T9)">
+            <span class="btn-icon">🔤</span> <span class="btn-label">TEXTO</span>
+          </button>
+          <button id="btn-show-keymap-guide" class="pixel-btn btn-neon-amber btn-keymap-glow" title="Guia de Teclas do Celular (ou segure TAB no jogo)">
+            <span class="btn-icon">❓</span> <span class="btn-label">AJUDA</span>
+          </button>
+          <button id="btn-toggle-keypad-drawer" class="pixel-btn active" aria-expanded="true" title="Abrir Teclado Virtual Numérico">
+            <span class="btn-icon">⌨</span> <span class="btn-label">TECLADO</span>
+          </button>
+        </div>
+
+        <!-- Cluster 3: Save / Load, Resolution & PiP -->
+        <div class="dock-cluster dock-right">
+          <div class="pixel-btn-group">
+            <button id="btn-hud-quicksave" class="pixel-btn-chip" title="Salvar Snapshot (F5)">💾 F5</button>
+            <button id="btn-hud-quickload" class="pixel-btn-chip" title="Carregar Snapshot (F8)">📂 F8</button>
+          </div>
+          <span id="hud-resolution" class="pixel-badge-res" title="Resolução do Jogo">240x320</span>
+
+          <!-- Dropdown for extra controls to prevent dock overflow -->
+          <div class="dock-more-wrap">
+            <button id="btn-dock-more" class="pixel-btn icon-only" title="Mais Opções (Velocidade, Foto, Girar)">⚙</button>
+            <div id="dock-more-menu" class="dock-more-menu hidden">
+              <button id="btn-speed" class="dock-menu-btn">⚡ Velocidade: 1.0x</button>
+              <button id="btn-screenshot" class="dock-menu-btn">📸 Foto (F12)</button>
+              <button id="btn-rotate-screen" class="dock-menu-btn">🔄 Girar 90°</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: GAME LIBRARY -->
+    <section id="view-library" class="view-panel active">
+      <div class="library-header">
+        <div class="library-title">
+          <h2>Jogos</h2>
+          <p>Sua coleção de bolso.</p>
+        </div>
+        <div class="library-actions">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-games" class="search-input" placeholder="Buscar jogo ou desenvolvedor...">
+          </div>
+
+          <button id="btn-import-jar" class="btn-primary">
+            <span>➕</span> Importar .JAR
+          </button>
+          <button id="btn-open-folder" class="btn-secondary" title="Abrir pasta no Windows Explorer">
+            <span>📂</span> /games
+          </button>
+        </div>
+      </div>
+
+      <!-- Recently Played Games Shelf -->
+      <div id="recent-games-section" class="recent-games-section hidden">
+        <div class="recent-header">
+          <div class="recent-title">
+            <span>🕒</span>
+            <h3>Jogados Recentemente</h3>
+          </div>
+          <button id="btn-clear-recent" class="btn-text-subtle" title="Limpar histórico de recentes">Limpar histórico</button>
+        </div>
+        <div id="recent-games-strip" class="recent-games-strip">
+          <!-- Rendered dynamically by Library.renderRecents() -->
+        </div>
+      </div>
+
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="dropzone-banner">
+        <div class="dropzone-icon">📥</div>
+        <div class="dropzone-title">Arraste e solte arquivos .jar aqui</div>
+        <div class="dropzone-sub">Ou clique para selecionar no computador. Metadados e ícones são detectados automaticamente!</div>
+      </div>
+
+      <div class="launcher-heading"><span>APLICATIVOS</span><span id="launcher-total">J2ME</span></div>
+      <div class="launcher-grid">
+        <button class="launcher-app hidden" id="launcher-resume"><span class="launcher-icon icon-resume" aria-hidden="true">▶</span><span>Continuar jogo</span></button>
+        <button class="launcher-app" id="launcher-settings"><span class="launcher-icon icon-settings" aria-hidden="true">⚙</span><span>Configurações</span></button>
+        <button class="launcher-app" id="launcher-import"><span class="launcher-icon icon-import" aria-hidden="true">＋</span><span>Adicionar jogo</span></button><button class="launcher-app sponsor-app" id="launcher-cuponizze" aria-label="Cuponizze, patrocinado. Abrir no navegador"><span class="launcher-icon sponsor-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3 4h18v5h-2v6h2v5H3v-5h2V9H3z M5 6v1h2v10H5v1h14v-1h-2V7h2V6z M9 8h6v2h-4v4h4v2H9z"/></svg></span><span>Cuponizze<small>Patrocinado</small></span></button>
+      <!-- Games Grid -->
+      <div id="games-grid" class="games-grid">
+        <!-- Rendered dynamically by library.js -->
+      </div>
+      </div>
+    </section>
+
+    <section id="view-settings" class="view-panel"><div class="settings-home"><div class="screen-heading"><span>AJUSTES</span><h2>Configurações</h2><p>Escolha o que deseja ajustar.</p></div><div class="settings-apps"><button class="settings-link" data-open-view="controls"><span>✥</span><span><b>Controles</b><small>Teclado e gamepad</small></span><span>›</span></button><button class="settings-link" data-open-view="video"><span>▤</span><span><b>Tela e áudio</b><small>Resolução, volume e janela</small></span><span>›</span></button><button class="settings-link" data-open-view="saves"><span>▣</span><span><b>Progresso</b><small>Saves e backups</small></span><span>›</span></button><button class="settings-link" data-open-view="languages"><span aria-hidden="true">文</span><span><b>Idioma</b><small>Idioma da interface</small></span><span>›</span></button><button class="settings-link" data-open-view="themes"><span></span><span><b>Aparência</b><small>Carcaça e tema da tela</small></span><span>›</span></button><button class="settings-link" id="settings-open-folder"><span>▧</span><span><b>Pasta de jogos</b><small>Abrir no computador</small></span><span>›</span></button></div><div class="settings-preference">          <label class="auto-open-toggle" title="Abrir automaticamente o último jogo ao iniciar o emulador">
+            <input type="checkbox" id="chk-auto-open-last">
+            <span class="pixel-switch" aria-hidden="true"><i></i></span><span>Auto-abrir último jogo</span>
+          </label></div></div></section>
+
+<section id="view-languages" class="view-panel"><div class="screen-heading"><span>IDIOMA</span><h2>Idioma da interface</h2><p>Os jogos mantêm seu idioma original.</p></div><label for="select-language">Idioma da interface do Jarumi</label><select id="select-language" class="select-custom"><option value="pt-BR" lang="pt-BR">Português (Brasil)</option><option value="en" lang="en">English</option><option value="es" lang="es">Español</option></select></section>
+<section id="view-themes" class="view-panel"><div class="screen-heading"><span>PERSONALIZAR</span><h2>Seu Jarumi</h2><p>Uma nova carcaça. O mesmo celular.</p></div><div class="theme-list"><button class="theme-choice" data-theme-choice="classic" aria-pressed="false"><span class="theme-preview preview-classic"><i></i><b>▦ ▦ ▦</b></span><span><strong>Claro</strong><small>Marfim · Verde profundo</small></span><span class="theme-check">✓</span></button><button class="theme-choice" data-theme-choice="dark" aria-pressed="false"><span class="theme-preview preview-dark"><i></i><b>▦ ▦ ▦</b></span><span><strong>Escuro</strong><small>Grafite · Verde profundo</small></span><span class="theme-check">✓</span></button><button class="theme-choice" data-theme-choice="ice" aria-pressed="false"><span class="theme-preview preview-ice"><i></i><b>▦ ▦ ▦</b></span><span><strong>Ice</strong><small>Gelo · Azul noturno</small></span><span class="theme-check">✓</span></button><button class="theme-choice" data-theme-choice="amber" aria-pressed="false"><span class="theme-preview preview-amber"><i></i><b>▦ ▦ ▦</b></span><span><strong>Amber</strong><small>Carvão · LCD âmbar</small></span><span class="theme-check">✓</span></button><button class="theme-choice" data-theme-choice="pocket" aria-pressed="false"><span class="theme-preview preview-pocket"><i></i><b>▦ ▦ ▦</b></span><span><strong>Lavender</strong><small>Ameixa · Tela lavanda</small></span><span class="theme-check">✓</span></button></div></section>
+    <!-- VIEW: CONTROLS & GAMEPAD CONFIG -->
+    <section id="view-controls" class="view-panel">
+      <div class="settings-section">
+        <div class="settings-section-title">
+          <span>🎮</span> Mapeamento de Teclas do Teclado
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
+          Clique em qualquer botão abaixo para gravar uma nova tecla física para o botão correspondente.
+        </p>
+        <div id="controls-config-grid" class="controls-grid">
+          <!-- Rendered dynamically by controls.js -->
+        </div>
+        <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+          <button class="btn-secondary" onclick="Controls.resetDefaults()">
+            🔄 Restaurar Padrões
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">
+          <span>🕹️</span> Suporte a Controle USB / Bluetooth (Gamepad)
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+          Basta conectar seu joystick (Xbox, PlayStation, Switch Pro, 8BitDo ou genérico). Ele é detectado automaticamente:
+        </p>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; font-size: 12px; line-height: 1.7;">
+          <div><b style="color: var(--primary);">D-Pad ou Analógico Esquerdo:</b> Movimentação (Cima, Baixo, Esquerda, Direita)</div>
+          <div><b style="color: var(--primary);">Botão A / Start:</b> OK / Ação / Centro / Fogo (Tecla 5)</div>
+          <div><b style="color: var(--primary);">Botão X / LB:</b> SoftKey Esquerda (Menu)</div>
+          <div><b style="color: var(--primary);">Botão B / RB:</b> SoftKey Direita (Voltar / Sair)</div>
+          <div><b style="color: var(--primary);">Botão Y:</b> Tecla 1</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: VIDEO & RESOLUTION -->
+    <section id="view-video" class="view-panel">
+      <div class="settings-section window-settings"><div class="settings-section-title">Janela flutuante e áudio</div><p>Ajuste o tamanho, a posição e o volume.</p>      <!-- PiP Quick Controls -->
+      <div class="pip-controls">
+        <div class="pip-sizes-wrap" title="Tamanho da Janela Flutuante">
+          <button class="pip-size-tag btn-pip-size" data-size="small" title="Pequeno">P</button>
+          <button class="pip-size-tag btn-pip-size" data-size="medium" title="Médio">M</button>
+          <button class="pip-size-tag btn-pip-size" data-size="large" title="Grande">G</button>
+        </div>
+
+        <div class="opacity-slider-wrap" title="Transparência da Janela">
+          <span>👁️</span>
+          <input type="range" id="pip-opacity-slider" class="opacity-slider" min="0.3" max="1.0" step="0.05" value="1.0">
+        </div>
+
+        <div class="corner-snaps" title="Fixar Janela nos Cantos">
+          <button class="corner-btn" data-corner="top-left" title="Canto Superior Esquerdo">↖</button>
+          <button class="corner-btn" data-corner="top-right" title="Canto Superior Direito">↗</button>
+          <button class="corner-btn" data-corner="bottom-left" title="Canto Inferior Esquerdo">↙</button>
+          <button class="corner-btn" data-corner="bottom-right" title="Canto Inferior Direito">↘</button>
+        </div>
+      </div>
+
+      <!-- Master Volume Control in Titlebar -->
+      <div class="volume-control-wrap" title="Volume Geral">
+        <button id="btn-volume-mute" class="btn-volume-mute" title="Mutar / Ativar Som">🔊</button>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.05" value="1.0" title="Volume">
+        <span id="volume-badge" class="volume-badge">100%</span>
+      </div>
+</div>
+      <div class="settings-section">
+        <div class="settings-section-title">
+          <span>📺</span> Resolução de Tela & Presets
+        </div>
+        
+        <div class="option-row">
+          <div class="option-info">
+            <h4>Resolução Nativa da Tela</h4>
+            <p>Selecione a resolução típica dos celulares da época.</p>
+          </div>
+          <select id="select-resolution" class="select-custom">
+            <option value="auto">Tentar detectar automaticamente</option>
+            <option value="128x128">128x128 (Nokia 3100, 3200)</option>
+            <option value="128x160">128x160 (Nokia 6030, Moto V180)</option>
+            <option value="176x208">176x208 (Nokia N-Gage, 6600, 7610)</option>
+            <option value="176x220">176x220 (Sony Ericsson K750, Moto V3)</option>
+            <option value="240x320" selected>240x320 (Nokia N95, 6300, K800 - Padrão Ouro)</option>
+            <option value="320x240">320x240 (Nokia E71, E63 - Horizontal)</option>
+            <option value="240x400">240x400 (Samsung Star Touch)</option>
+            <option value="640x360">640x360</option>
+            <option value="360x640">360x640 (Nokia 5800 Touch)</option>
+          </select><p id="resolution-info" class="resolution-info"></p><p class="resolution-info">A proporção acompanha a tela emulada. Uma resolução fixa pode forçar o formato.</p>
+        </div>
+
+        <div class="option-row">
+          <div class="option-info">
+            <h4>Filtro de Renderização</h4>
+            <p>Nitidez pixelada nostálgica ou interpolação suave.</p>
+          </div>
+          <select id="select-filter" class="select-custom">
+            <option value="pixelated" selected>Pixel Art Crocante (Nearest Neighbor)</option>
+            <option value="smooth">Suave / Antialiased (Bilinear)</option>
+          </select>
+        </div>
+
+        <div class="option-row">
+          <div class="option-info">
+            <h4>Shaders Retrô</h4>
+            <p>Efeitos de tela de fósforo CRT ou matriz de cristal líquido.</p>
+          </div>
+          <select id="select-shader" class="select-custom">
+            <option value="none" selected>Nenhum (Clean Pixel Art)</option>
+            <option value="lcd">Grade de Pixels LCD (Subpixels de celular antigo)</option>
+            <option value="crt">Linhas de Varredura CRT Scanlines</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: SAVES & AUTO-SAVE -->
+    <section id="view-saves" class="view-panel">
+      <div class="settings-section">
+        <div class="settings-section-title">
+          <span>💾</span> Configuração de Auto-Save
+        </div>
+        <div class="option-row">
+          <div class="option-info">
+            <h4>Intervalo do Auto-Save</h4>
+            <p>Grava automaticamente o progresso e highscores dos jogos.</p>
+          </div>
+          <select id="select-autosave-interval" class="select-custom">
+            <option value="10">A cada 10 segundos</option>
+            <option value="30" selected>A cada 30 segundos (Recomendado)</option>
+            <option value="60">A cada 1 minuto</option>
+            <option value="0">Desativado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">
+          <span>📦</span> Backup e Restauração de Saves (RMS)
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+          Exporte seus saves para um arquivo JSON no PC ou restaure seu progresso a qualquer momento.
+        </p>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+          <button id="btn-export-saves" class="btn-primary">
+            <span>📤</span> Exportar Backup (.JSON)
+          </button>
+          <button id="btn-import-saves" class="btn-secondary">
+            <span>📥</span> Importar Backup (.JSON)
+          </button>
+          <button id="btn-clear-saves" class="btn-secondary" style="color: #ff334b; border-color: rgba(255, 51, 75, 0.3);">
+            <span>🗑️</span> Limpar Saves
+          </button>
+        </div>
+
+        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Bancos de Dados RMS Ativos:</h4>
+        <div id="rms-stores-list">
+          <!-- Rendered dynamically by saves.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Keymap HUD Overlay (press/hold TAB or click button) -->
+    <div id="keymap-hud-overlay" class="keymap-hud-overlay hidden">
+      <div class="keymap-hud-modal">
+        <div class="keymap-hud-header">
+          <div class="keymap-hud-title">
+            <span>🎮</span>
+            <h3>Guia Rápido de Teclas (Celular ➜ PC)</h3>
+          </div>
+          <button id="btn-close-keymap-hud" class="keymap-close-btn" title="Fechar (Esc ou solte TAB)">✕</button>
+        </div>
+
+        <div class="keymap-hud-content">
+          <div class="keymap-col">
+            <h4 class="col-title">📱 Teclas de Ação do Celular</h4>
+            <div class="keymap-row">
+              <span class="cell-label">SoftKey Esq. (LSK)</span>
+              <span class="cell-arrow">➜</span>
+              <span class="badge-group"><kbd class="key-badge">Q</kbd> <span class="sep">/</span> <kbd class="key-badge">Z</kbd> <span class="sep">/</span> <kbd class="key-badge">F1</kbd></span>
+              <span class="cell-desc">Opções / Menu / Aceitar</span>
+            </div>
+            <div class="keymap-row">
+              <span class="cell-label">SoftKey Dir. (RSK)</span>
+              <span class="cell-arrow">➜</span>
+              <span class="badge-group"><kbd class="key-badge">E</kbd> <span class="sep">/</span> <kbd class="key-badge">X</kbd> <span class="sep">/</span> <kbd class="key-badge">F2</kbd></span>
+              <span class="cell-desc">Voltar / Sair / Cancelar</span>
+            </div>
+            <div class="keymap-row">
+              <span class="cell-label">D-Pad (Direcionais)</span>
+              <span class="cell-arrow">➜</span>
+              <span class="badge-group"><kbd class="key-badge">W A S D</kbd> <span class="sep">/</span> <kbd class="key-badge">Setas</kbd></span>
+              <span class="cell-desc">Movimentação</span>
+            </div>
+            <div class="keymap-row">
+              <span class="cell-label">Centro / OK / Tecla 5</span>
+              <span class="cell-arrow">➜</span>
+              <span class="badge-group"><kbd class="key-badge highlight">Enter</kbd> <span class="sep">/</span> <kbd class="key-badge highlight">Espaço</kbd></span>
+              <span class="cell-desc">Fogo / Pulo / Ação</span>
+            </div>
+            <div class="keymap-row">
+              <span class="cell-label">Chamar / Atender</span>
+              <span class="cell-arrow">➜</span>
+              <span class="badge-group"><kbd class="key-badge">C</kbd></span>
+              <span class="cell-desc">Chamada</span>
+            </div>
+            <div class="keymap-row">
+              <span class="cell-label">Desligar / Sair</span>
+              <span class="cell-arrow">➜</span>
+              <span class="badge-group"><kbd class="key-badge">Esc</kbd></span>
+              <span class="cell-desc">Desligar</span>
+            </div>
+          </div>
+
+          <div class="keymap-col">
+            <h4 class="col-title">🔢 Teclado Numérico</h4>
+            <div class="keymap-mini-grid">
+              <div class="grid-key"><span class="k-phone">1</span><span class="k-pc">1</span></div>
+              <div class="grid-key"><span class="k-phone">2 ▲</span><span class="k-pc">2/W</span></div>
+              <div class="grid-key"><span class="k-phone">3</span><span class="k-pc">3</span></div>
+              <div class="grid-key"><span class="k-phone">4 ◀</span><span class="k-pc">4/A</span></div>
+              <div class="grid-key action-key"><span class="k-phone">5 OK</span><span class="k-pc">5/Space</span></div>
+              <div class="grid-key"><span class="k-phone">6 ▶</span><span class="k-pc">6/D</span></div>
+              <div class="grid-key"><span class="k-phone">7</span><span class="k-pc">7</span></div>
+              <div class="grid-key"><span class="k-phone">8 ▼</span><span class="k-pc">8/S</span></div>
+              <div class="grid-key"><span class="k-phone">9</span><span class="k-pc">9</span></div>
+              <div class="grid-key"><span class="k-phone">*</span><span class="k-pc">*</span></div>
+              <div class="grid-key"><span class="k-phone">0</span><span class="k-pc">0</span></div>
+              <div class="grid-key"><span class="k-phone">#</span><span class="k-pc">#</span></div>
+            </div>
+
+            <h4 class="col-title" style="margin-top: 14px;">⚡ Atalhos Globais</h4>
+            <div class="keymap-shortcuts-grid">
+              <div><kbd class="key-badge">F10</kbd> Janela Flutuante (PiP)</div>
+              <div><kbd class="key-badge">F5 / F8</kbd> Quick Save / Load</div>
+              <div><kbd class="key-badge">F12</kbd> Screenshot (Foto)</div>
+              <div><kbd class="key-badge">Segurar TAB</kbd> Mostrar este Guia</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="keymap-hud-footer">
+          <span>💡 Dica: Remapeie qualquer tecla física ou controle USB/Bluetooth na aba <b>🎮 Controles & Gamepad</b>.</span>
+        </div>
+      </div>
+    </div>
+    <!-- Retro Pixel Arcade Text & Name Input Modal (Dual Engine: T9 Auto-Typer + Direct ASCII) -->
+    <div id="text-input-dialog" class="text-input-dialog hidden">
+      <div class="text-input-box pixel-box">
+        <div class="text-input-header">
+          <div class="text-input-title">
+            <span class="pixel-icon">🔤</span>
+            <h3>DIGITAR NOME NO JOGO</h3>
+          </div>
+          <button id="btn-close-text-dialog" class="pixel-close-btn" title="Fechar (Esc)">✕</button>
+        </div>
+        <p class="text-input-help">
+          Digite seu nome ou texto. Clique em <b>Auto T9</b> para enviar com as teclas virtuais do celular, ou use as teclas numéricas abaixo!
+        </p>
+        <div class="text-input-field-wrap">
+          <input type="text" id="input-game-text" class="game-text-input pixel-input" placeholder="DIGITE SEU NOME..." maxlength="25" autofocus autocomplete="off">
+        </div>
+        <div class="text-input-buttons-row">
+          <button id="btn-submit-game-t9" class="pixel-btn btn-neon-cyan" title="Converte automaticamente para as teclas do celular (Miami Nights, Gameloft, RPGs)">
+            🚀 AUTO T9 (CELULAR) ↵
+          </button>
+          <button id="btn-submit-game-text" class="pixel-btn btn-neon-amber" title="Envia os caracteres diretos / formulário MIDP">
+            ↵ TEXTO DIRETO
+          </button>
+        </div>
+
+        <!-- Interactive Retro Phone Keypad Grid -->
+        <div class="modal-t9-wrap">
+          <div class="modal-t9-label">TECLADO T9 INTERATIVO (OU PRESSIONE 2-9 NO TECLADO):</div>
+          <div class="modal-t9-grid">
+            <button class="t9-btn" data-key="49"><span class="t9-d">1</span><span class="t9-l">.,'?!</span></button>
+            <button class="t9-btn" data-key="50"><span class="t9-d">2</span><span class="t9-l">ABC</span></button>
+            <button class="t9-btn" data-key="51"><span class="t9-d">3</span><span class="t9-l">DEF</span></button>
+
+            <button class="t9-btn" data-key="52"><span class="t9-d">4</span><span class="t9-l">GHI</span></button>
+            <button class="t9-btn" data-key="53"><span class="t9-d">5</span><span class="t9-l">JKL</span></button>
+            <button class="t9-btn" data-key="54"><span class="t9-d">6</span><span class="t9-l">MNO</span></button>
+
+            <button class="t9-btn" data-key="55"><span class="t9-d">7</span><span class="t9-l">PQRS</span></button>
+            <button class="t9-btn" data-key="56"><span class="t9-d">8</span><span class="t9-l">TUV</span></button>
+            <button class="t9-btn" data-key="57"><span class="t9-d">9</span><span class="t9-l">WXYZ</span></button>
+
+            <button class="t9-btn t9-action-btn" data-action="clear" title="Apagar último caractere"><span class="t9-d">⌫</span><span class="t9-l">APAGAR</span></button>
+            <button class="t9-btn" data-key="48"><span class="t9-d">0</span><span class="t9-l">␣ ESPAÇO</span></button>
+            <button class="t9-btn t9-action-btn" data-action="next" title="Avançar cursor"><span class="t9-d">➜</span><span class="t9-l">AVANÇAR</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+      <!-- Collapsible Keypad Drawer (for mouse clicks) -->
+      <div id="keypad-drawer" class="keypad-drawer open">
+        <div class="phone-keypad">
+          <div class="keypad-row-soft">
+            <button class="key-soft" data-code="-6">LSK</button>
+            <div class="key-dpad-center">
+              <div></div>
+              <button class="dpad-btn" data-code="-1" aria-label="Cima" title="Cima"></button>
+              <div></div>
+              <button class="dpad-btn" data-code="-3" aria-label="Esquerda" title="Esquerda"></button>
+              <button class="dpad-btn dpad-center" data-code="-5" aria-label="Confirmar" title="Confirmar"></button>
+              <button class="dpad-btn" data-code="-4" aria-label="Direita" title="Direita"></button>
+              <div></div>
+              <button class="dpad-btn" data-code="-2" aria-label="Baixo" title="Baixo"></button>
+              <div></div>
+            </div>
+            <button class="key-soft" data-code="-7">RSK</button>
+          </div>
+
+          <div class="keypad-call-row">
+            <button class="key-call" data-code="-10">📞</button>
+            <button class="key-end" data-code="-11">📵</button>
+          </div>
+
+          <div class="phone-qwerty" aria-label="Teclado QWERTY"><div class="qwerty-row"><button data-code="49">1</button><button data-code="50">2</button><button data-code="51">3</button><button data-code="52">4</button><button data-code="53">5</button><button data-code="54">6</button><button data-code="55">7</button><button data-code="56">8</button><button data-code="57">9</button><button data-code="48">0</button></div><div class="qwerty-row"><button data-code="113" aria-label="Letra Q">Q</button><button data-code="119" aria-label="Letra W">W</button><button data-code="101" aria-label="Letra E">E</button><button data-code="114" aria-label="Letra R">R</button><button data-code="116" aria-label="Letra T">T</button><button data-code="121" aria-label="Letra Y">Y</button><button data-code="117" aria-label="Letra U">U</button><button data-code="105" aria-label="Letra I">I</button><button data-code="111" aria-label="Letra O">O</button><button data-code="112" aria-label="Letra P">P</button></div><div class="qwerty-row"><button data-code="97" aria-label="Letra A">A</button><button data-code="115" aria-label="Letra S">S</button><button data-code="100" aria-label="Letra D">D</button><button data-code="102" aria-label="Letra F">F</button><button data-code="103" aria-label="Letra G">G</button><button data-code="104" aria-label="Letra H">H</button><button data-code="106" aria-label="Letra J">J</button><button data-code="107" aria-label="Letra K">K</button><button data-code="108" aria-label="Letra L">L</button></div><div class="qwerty-row"><button data-code="122" aria-label="Letra Z">Z</button><button data-code="120" aria-label="Letra X">X</button><button data-code="99" aria-label="Letra C">C</button><button data-code="118" aria-label="Letra V">V</button><button data-code="98" aria-label="Letra B">B</button><button data-code="110" aria-label="Letra N">N</button><button data-code="109" aria-label="Letra M">M</button></div><div class="qwerty-row"><button data-code="42">*</button><button class="qwerty-space" data-code="32">ESPAÇO</button><button data-code="8" aria-label="Apagar">DEL</button><button data-code="35">#</button></div></div><div class="keypad-grid-num">
+            <button class="key-num" data-code="49"><span class="digit">1</span><span class="subletters">., '</span></button>
+            <button class="key-num" data-code="50"><span class="digit">2</span><span class="subletters">ABC</span></button>
+            <button class="key-num" data-code="51"><span class="digit">3</span><span class="subletters">DEF</span></button>
+
+            <button class="key-num" data-code="52"><span class="digit">4</span><span class="subletters">GHI</span></button>
+            <button class="key-num" data-code="53"><span class="digit">5</span><span class="subletters">JKL</span></button>
+            <button class="key-num" data-code="54"><span class="digit">6</span><span class="subletters">MNO</span></button>
+
+            <button class="key-num" data-code="55"><span class="digit">7</span><span class="subletters">PQRS</span></button>
+            <button class="key-num" data-code="56"><span class="digit">8</span><span class="subletters">TUV</span></button>
+            <button class="key-num" data-code="57"><span class="digit">9</span><span class="subletters">WXYZ</span></button>
+
+            <button class="key-num" data-code="42"><span class="digit">*</span><span class="subletters">+</span></button>
+            <button class="key-num" data-code="48"><span class="digit">0</span><span class="subletters">␣</span></button>
+            <button class="key-num" data-code="35"><span class="digit">#</span><span class="subletters">⇧</span></button>
+          </div>
+        </div>
+      </div>
+
+
+  <div class="device-footer" aria-hidden="true"><span>◆</span> SEUS CLÁSSICOS DE CELULAR, DE VOLTA</div>
+</div>
+
+  <!-- Global Toast Notification -->
+  <div id="toast">Notificação</div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/game-setup.js"></script>
+  <script src="js/library.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/video.js"></script>
+  <script src="js/saves.js"></script>
+  <script src="js/locales.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/jarumi-ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+node_modules/
+dist/
+release/
+exports/
+games/
+games - Copy/
+screenshots/
+*.log
+.env
+.env.*
+!.env.example
+settings.json
+*.sqlite*
+*.db
+*.dmp
+test-*.js
+test-*.png
+/*-check.js
+*-aligned.png
+*.REMOVED.git-id
+java/classes2.jar
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

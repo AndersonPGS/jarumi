@@ -1,0 +1,13 @@
+name: Sugestão
+description: Propor uma melhoria
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema você quer resolver?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Comportamento desejado

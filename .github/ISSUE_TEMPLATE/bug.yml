@@ -1,0 +1,22 @@
+name: Bug
+description: Relatar um problema reproduzível sem anexar jogos ou saves
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Versão do Jarumi e Windows
+      placeholder: 1.0.1 Portable, Windows 11 x64
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Como reproduzir
+      description: Informe os passos, o resultado esperado e o observado. Não anexe JARs comerciais, saves, perfis ou dados pessoais.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto e evidências
+      description: Nome/versão do jogo, resolução configurada e captura sem dados pessoais, se necessário.
