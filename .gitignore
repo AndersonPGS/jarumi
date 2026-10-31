@@ -4,7 +4,7 @@ release/
 exports/
 games/
 games - Copy/
-screenshots/
+/screenshots/
 *.log
 .env
 .env.*
