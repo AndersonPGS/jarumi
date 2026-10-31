@@ -18,14 +18,18 @@ Capturas da interface atual com biblioteca vazia, sem jogos ou dados pessoais.
 | :---: | :---: |
 | <img src="docs/screenshots/settings.png" width="300" alt="Tela de configurações com controles, tela, progresso e idiomas"> | <img src="docs/screenshots/themes.png" width="300" alt="Seletor dos temas disponíveis no Jarumi"> |
 
+| Tela e áudio | Ajustes do PiP |
+| :---: | :---: |
+| <img src="docs/screenshots/window-settings.png" width="300" alt="Controles pixel art de tamanho, posição, transparência e volume"> | <img src="docs/screenshots/pip-controls.png" width="240" alt="Menu compacto do PiP com sliders de volume e transparência"> |
+
 ## Usar no Windows
 
-Quando uma versão for publicada, os downloads ficarão na seção **Releases** deste repositório:
+Baixe a versão mais recente em **[Releases](https://github.com/AndersonPGS/jarumi/releases/latest)**:
 
 - `Jarumi-<versão>-Setup-x64.exe`: instalador por usuário.
 - `Jarumi-<versão>-Portable-x64.exe`: executável sem instalação. Os dados continuam no perfil do usuário, não ao lado do executável.
 
-Não é necessário instalar Node.js, Java ou clonar o código para usar esses executáveis. Atualmente os builds são de validação, sem assinatura digital; não há atualização automática. Não há suporte validado para macOS, Linux ou Windows ARM.
+Não é necessário instalar Node.js, Java ou clonar o código para usar esses executáveis. Os executáveis são distribuídos sem assinatura digital; não há atualização automática. Não há suporte validado para macOS, Linux ou Windows ARM.
 
 Abra o aplicativo e use **Adicionar jogo**. Na primeira abertura de cada jogo, escolha uma resolução ou tente a detecção automática, teste e confirme. Sem metadados reconhecidos, o teste usa 240 × 320 e informa essa limitação. Altere depois pelo botão direito no jogo → Configurar tela do jogo.
 

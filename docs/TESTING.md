@@ -21,3 +21,7 @@ Antes de publicar, validar manualmente o Portable e o Setup em Windows limpo: ab
 ## Regressão 1.0.1
 
 No 1.0.0, `main.js` buscava `locales/pt-BR.json`, mas a lista do empacotador não incluía `locales/*.json`. O teste antigo abria os recursos web sem main/preload, então não exercitava o diálogo nativo. O novo teste falhou no pacote 1.0.0 com MODULE_NOT_FOUND e nenhuma chamada ao seletor. A correção inclui os catálogos no pacote e exibe feedback se a chamada de importação falhar.
+
+## Regressão do volume PiP
+
+`npm run test:pip` mede a largura clicável do slider e envia mouseDown/mouseMove/mouseUp reais pelo Electron; confere alteração de volume e controle por teclado em 160, 240 e 360 pixels. Antes da correção, o controle tinha largura zero devido ao dimensionamento flex do contêiner. Esse teste faz parte do CI e do gate de empacotamento.

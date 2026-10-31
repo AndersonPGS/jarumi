@@ -1,6 +1,8 @@
 // Original pixel icons and device themes. Game pixels are never recolored.
 const JarumiUI = {
   icons: {
+    sound: 'M1 6h3l4-4v12l-4-4H1z M10 5h2v6h-2z M13 3h2v10h-2z',
+    muted: 'M1 6h3l4-4v12l-4-4H1z M10 5h2v2h2V5h2v2h-2v2h2v2h-2V9h-2v2h-2V9h2V7h-2z',
     pip: 'M1 2h14v12H1z M3 4v8h10V4z M8 8h4v3H8z',
     wifi: 'M1 3h14v2H1z M3 6h10v2H3z M5 9h6v2H5z M7 12h2v2H7z',
     pause: 'M3 2h4v12H3z M9 2h4v12H9z',

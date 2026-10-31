@@ -81,8 +81,8 @@
       <div id="pip-floating-bar" class="pip-floating-bar" role="dialog" aria-label="Ajustes PiP">
         <div class="pip-panel-header"><span>Ajustes</span><button id="pip-btn-collapse" class="pip-pill-btn" aria-label="Fechar ajustes">×</button></div>
         <label class="pip-control-label" for="pip-floating-volume">Volume</label>
-        <div class="pip-volume-pill"><button id="pip-btn-mute" class="pip-pill-btn" aria-label="Alternar áudio">Som</button><input type="range" id="pip-floating-volume" min="0" max="1" step="0.05" value="1" aria-label="Volume"></div>
-        <label class="pip-control-label" for="pip-floating-opacity">Transparência</label><input type="range" id="pip-floating-opacity" min="0.3" max="1" step="0.05" value="1" aria-label="Opacidade">
+        <div class="pip-volume-pill"><button id="pip-btn-mute" class="pip-pill-btn" aria-label="Alternar áudio">Som</button><input type="range" id="pip-floating-volume" min="0" max="1" step="0.05" value="1" aria-label="Volume"><output data-volume-readout for="pip-floating-volume">80%</output></div>
+        <label class="pip-control-label" for="pip-floating-opacity">Transparência</label><input type="range" id="pip-floating-opacity" min="0.3" max="1" step="0.05" value="1" aria-label="Opacidade"><output data-opacity-readout for="pip-floating-opacity">100%</output>
         <button id="pip-btn-keymap" class="pip-pill-btn">Guia de teclas</button>
       </div>
 
@@ -103,7 +103,7 @@
           <div class="dock-volume-wrap" title="Volume Geral">
             <button id="dock-btn-mute" class="pixel-btn icon-only" title="Mutar / Ativar Som">🔊</button>
             <input type="range" id="dock-volume-slider" class="volume-slider dock-vol-slider" min="0" max="1" step="0.05" value="0.8" title="Volume">
-            <span id="volume-badge" class="vol-percent-badge">80%</span>
+            <span id="dock-volume-badge" class="vol-percent-badge">80%</span>
           </div>
         </div>
 
@@ -241,34 +241,13 @@
 
     <!-- VIEW: VIDEO & RESOLUTION -->
     <section id="view-video" class="view-panel">
-      <div class="settings-section window-settings"><div class="settings-section-title">Janela flutuante e áudio</div><p>Ajuste o tamanho, a posição e o volume.</p>      <!-- PiP Quick Controls -->
-      <div class="pip-controls">
-        <div class="pip-sizes-wrap" title="Tamanho da Janela Flutuante">
-          <button class="pip-size-tag btn-pip-size" data-size="small" title="Pequeno">P</button>
-          <button class="pip-size-tag btn-pip-size" data-size="medium" title="Médio">M</button>
-          <button class="pip-size-tag btn-pip-size" data-size="large" title="Grande">G</button>
-        </div>
-
-        <div class="opacity-slider-wrap" title="Transparência da Janela">
-          <span>👁️</span>
-          <input type="range" id="pip-opacity-slider" class="opacity-slider" min="0.3" max="1.0" step="0.05" value="1.0">
-        </div>
-
-        <div class="corner-snaps" title="Fixar Janela nos Cantos">
-          <button class="corner-btn" data-corner="top-left" title="Canto Superior Esquerdo">↖</button>
-          <button class="corner-btn" data-corner="top-right" title="Canto Superior Direito">↗</button>
-          <button class="corner-btn" data-corner="bottom-left" title="Canto Inferior Esquerdo">↙</button>
-          <button class="corner-btn" data-corner="bottom-right" title="Canto Inferior Direito">↘</button>
-        </div>
+      <div class="settings-section window-settings">
+        <div class="settings-section-title">Janela flutuante e áudio</div>
+        <div class="window-control-row"><label>Tamanho</label><div class="pip-sizes-wrap"><button class="btn-pip-size" data-size="small">Pequeno</button> <button class="btn-pip-size" data-size="medium">Médio</button> <button class="btn-pip-size" data-size="large">Grande</button></div></div>
+        <div class="window-control-row"><label>Posição</label><div class="corner-snaps"><button class="corner-btn" data-corner="top-left" title="Canto Superior Esquerdo" aria-label="Canto Superior Esquerdo"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 1h14v14H1z" fill="none" stroke="currentColor"/><path d="M3 3h5v4h-5z" fill="currentColor"/></svg></button><button class="corner-btn" data-corner="top-right" title="Canto Superior Direito" aria-label="Canto Superior Direito"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 1h14v14H1z" fill="none" stroke="currentColor"/><path d="M8 3h5v4h-5z" fill="currentColor"/></svg></button><button class="corner-btn" data-corner="bottom-left" title="Canto Inferior Esquerdo" aria-label="Canto Inferior Esquerdo"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 1h14v14H1z" fill="none" stroke="currentColor"/><path d="M3 9h5v4h-5z" fill="currentColor"/></svg></button><button class="corner-btn" data-corner="bottom-right" title="Canto Inferior Direito" aria-label="Canto Inferior Direito"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 1h14v14H1z" fill="none" stroke="currentColor"/><path d="M8 9h5v4h-5z" fill="currentColor"/></svg></button></div></div>
+        <div class="window-control-row"><label for="pip-opacity-slider">Transparência</label><div class="window-range-row"><input type="range" id="pip-opacity-slider" min="0.3" max="1" step="0.05" value="1"><output data-opacity-readout for="pip-opacity-slider">100%</output></div></div>
+        <div class="window-control-row"><label for="volume-slider">Volume</label><div class="window-range-row"><button id="btn-volume-mute" title="Mutar / Ativar Som" aria-label="Alternar áudio">Som</button><input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8"><output id="volume-badge" data-volume-readout for="volume-slider">80%</output></div></div>
       </div>
-
-      <!-- Master Volume Control in Titlebar -->
-      <div class="volume-control-wrap" title="Volume Geral">
-        <button id="btn-volume-mute" class="btn-volume-mute" title="Mutar / Ativar Som">🔊</button>
-        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.05" value="1.0" title="Volume">
-        <span id="volume-badge" class="volume-badge">100%</span>
-      </div>
-</div>
       <div class="settings-section">
         <div class="settings-section-title">
           <span>📺</span> Resolução de Tela & Presets

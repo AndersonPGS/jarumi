@@ -346,5 +346,7 @@
   "O arquivo não informa a resolução. O teste usará 240 × 320; ajuste se necessário.": "The file does not specify a resolution. The test will use 240 × 320; adjust if needed.",
   "A escolha será salva apenas após a confirmação.": "Your choice will only be saved after confirmation.",
   "Tela salva para este jogo.": "Screen saved for this game.",
-  "Não foi possível abrir a importação. Tente novamente.": "Could not open the import dialog. Please try again."
+  "Não foi possível abrir a importação. Tente novamente.": "Could not open the import dialog. Please try again.",
+  "Tamanho": "Size",
+  "Posição": "Position"
 }

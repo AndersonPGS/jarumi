@@ -361,14 +361,12 @@ const App = {
     if (dockSlider) dockSlider.value = effectiveVal;
     if (pipSlider) pipSlider.value = effectiveVal;
 
-    if (badge) {
-      badge.textContent = this.isMuted ? 'Mudo' : `${Math.round(this.volume * 100)}%`;
-    }
+    document.querySelectorAll('#volume-badge, #dock-volume-badge, [data-volume-readout]').forEach(el => { el.textContent = `${Math.round(effectiveVal * 100)}%`; });
 
     const muteIcon = this.isMuted ? '🔇' : (this.volume < 0.4 ? '🔉' : '🔊');
     ['btn-volume-mute', 'dock-btn-mute', 'pip-btn-mute'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.textContent = muteIcon;
+      if (el) { el.innerHTML = JarumiUI.icon(this.isMuted ? 'muted' : 'sound'); el.setAttribute('aria-pressed', String(this.isMuted)); }
     });
   },
 
@@ -457,6 +455,7 @@ const App = {
     const floatSlider = document.getElementById('pip-floating-opacity');
 
     const handleOpacityChange = (val) => {
+      document.querySelectorAll('[data-opacity-readout]').forEach(el => { el.textContent = `${Math.round(val * 100)}%`; });
       if (slider) slider.value = val;
       if (floatSlider) floatSlider.value = val;
       if (window.j2mePiP?.setOpacity) {
@@ -486,6 +485,7 @@ const App = {
     document.querySelectorAll('.btn-pip-size').forEach(btn => {
       btn.addEventListener('click', () => {
         const sizeName = btn.getAttribute('data-size');
+        document.querySelectorAll('.btn-pip-size').forEach(item=>item.setAttribute('aria-pressed',String(item===btn)));
         if (window.j2mePiP?.setPiPSize) {
           window.j2mePiP.setPiPSize(sizeName);
         }

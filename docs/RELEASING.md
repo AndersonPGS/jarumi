@@ -22,3 +22,14 @@
 O workflow manual gera artefatos internos para revisão, sem publicar Releases. Depois da aprovação, criar tag da versão e Release com notas, executáveis, hashes, licenças e acesso às fontes correspondentes exigidas. Não publicar jogos. Não há auto-update implementado; atualizações são manuais.
 
 A matriz automatizada e seus limites estão em [TESTING.md](TESTING.md). Antes de publicar, todos os gates de `npm run dist:win` precisam passar.
+
+## Releases automáticas por tag
+
+Por solicitação do mantenedor, tags `v<versão>` publicam os builds Windows automaticamente após os gates de teste. Isso não altera a pendência documentada de licenciamento dos componentes herdados nem promove o arquivo publication-status.json a aprovado.
+
+1. Atualizar versão em package.json e package-lock.json e criar `docs/releases/v<versão>.md`.
+2. Executar checks e testes e enviar o commit revisado.
+3. Criar e enviar tag `v<versão>` apontando para esse commit.
+4. O workflow Windows build and release verifica a versão, executa os testes, gera Setup e Portable, calcula SHA-256 e publica os três arquivos na Release da tag.
+
+Pushes comuns em main não criam novas Releases. A execução manual em main continua gerando artefatos de teste; para publicar deve ser usada uma tag de versão. Os downloads não atualizam instalações automaticamente. Certificados de assinatura ainda não estão configurados.
