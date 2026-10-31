@@ -1,5 +1,5 @@
 // Runs the real main process + preload + renderer. Only OS dialogs are replaced.
-const {app,BrowserWindow,dialog}=require('electron');
+const {app,BrowserWindow,dialog,shell}=require('electron');
 const fs=require('fs'),path=require('path'),os=require('os'),assert=require('assert/strict');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'jarumi-native-e2e-'));
 app.setPath('appData',tmp);app.setPath('userData',path.join(tmp,'initial-profile'));
@@ -12,6 +12,12 @@ const watchdog=setTimeout(()=>{console.error('Native E2E timeout');app.exit(1);}
 dialog.showOpenDialog=async(_window,options)=>{calls.push(options);if(dialogError)throw dialogError;return answer;};
 dialog.showSaveDialog=async(_window,options)=>{calls.push(options);return {canceled:false,filePath:path.join(tmp,'backup.json')};};
 process.on('unhandledRejection',e=>{failure=e;});
+let updateRequests=0,openedUpdate;
+globalThis.fetch=async url=>{
+ assert.equal(url,'https://api.github.com/repos/AndersonPGS/jarumi/releases/latest');updateRequests++;
+ return {ok:true,status:200,text:async()=>JSON.stringify({tag_name:'v99.0.0',draft:false,prerelease:false,assets:[]})};
+};
+shell.openExternal=async url=>{openedUpdate=url;};
 require(path.join(target,'main.js'));
 app.whenReady().then(async()=>{
  let win;
@@ -20,6 +26,18 @@ app.whenReady().then(async()=>{
  const run=s=>win.webContents.executeJavaScript(s);
  await pause(500);
  assert.equal(await run('!!window.j2mePiP?.isElectron'),true,'real preload bridge');
+ assert.equal(updateRequests,0,'development/test startup does not query GitHub');
+ const updateInfo=await run('window.j2mePiP.getUpdateInfo()');assert.equal(updateInfo.currentVersion,require('../package.json').version,'installed package version via real IPC');
+ await run(`document.querySelector('[data-open-view="updates"]').click()`);
+ assert.equal(await run('App.currentView'),'updates','settings update entry opens screen');
+ await run('document.getElementById("btn-check-updates").click()');await pause(250);
+ assert.equal(await run('Updates.result.status'),'available','manual button checks via main IPC');
+ assert.equal(updateRequests,1);assert.equal(await run('document.getElementById("btn-download-update").hidden'),false);
+ await run('document.getElementById("btn-download-update").click()');await pause(100);
+ assert.equal(openedUpdate,'https://github.com/AndersonPGS/jarumi/releases/tag/v99.0.0','download opens canonical release');
+ await run('document.getElementById("check-updates-startup").click()');await pause(100);
+ assert.equal(await run('Storage.get("jarumi_check_updates")'),'false','startup preference persists');
+ await run('App.switchTab("library")');
  for(const locale of ['pt-BR','en','es']){
   await run(`Storage.set('jarumi_language',${JSON.stringify(locale)});document.getElementById('btn-import-jar').click();`);
   await pause(250);

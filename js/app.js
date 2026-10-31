@@ -76,6 +76,7 @@ const App = {
     Controls.init();
     Video.init();
     Saves.init();
+    Updates.init();
 
     // Listen for PiP events from Electron
     if (window.j2mePiP?.onPiPChanged) {
@@ -274,7 +275,7 @@ const App = {
     document.body.dataset.view = viewName;
     if (typeof Video !== 'undefined') Video.updatePhoneOrientation();
     document.getElementById('launcher-resume')?.classList.toggle('hidden', !Library.currentGame);
-    const titles = {languages:'IDIOMA', themes: 'APARÊNCIA', library: 'INÍCIO', settings: 'AJUSTES', player: 'JOGANDO', controls: 'CONTROLES', video: 'TELA E ÁUDIO', saves: 'PROGRESSO'};
+    const titles = {updates:'ATUALIZAÇÕES', languages:'IDIOMA', themes: 'APARÊNCIA', library: 'INÍCIO', settings: 'AJUSTES', player: 'JOGANDO', controls: 'CONTROLES', video: 'TELA E ÁUDIO', saves: 'PROGRESSO'};
     document.getElementById('screen-title').textContent = titles[viewName] || 'J2ME';
     document.querySelectorAll('.nav-tab').forEach(t => {
       t.classList.toggle('active', t.getAttribute('data-view') === viewName);

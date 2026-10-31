@@ -2,6 +2,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('j2mePiP', {
   isElectron: true,
+  getUpdateInfo: () => ipcRenderer.invoke('updates-info'),
+  checkUpdates: () => ipcRenderer.invoke('updates-check'),
+  openUpdate: () => ipcRenderer.invoke('updates-open'),
   openCuponizze: () => ipcRenderer.invoke('open-cuponizze'),
 
   // Window & PiP control

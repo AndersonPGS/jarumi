@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain, dialog, shell, screen } = require('electron
 const path = require('path');
 const fs = require('fs');
 const { startServer, scanGames, extractJarMetadata } = require('./server');
+const { createUpdateService } = require('./update-service');
+const updateService = createUpdateService({version:require('./package.json').version,portable:!!process.env.PORTABLE_EXECUTABLE_FILE,packaged:app.isPackaged,openExternal:url=>shell.openExternal(url)});
 
 // Keep existing progress when upgrading from the previous application name.
 app.setName('Jarumi');
@@ -273,6 +275,13 @@ function setupGamesFolderWatcher() {
 
 // Register IPC handlers
 function registerIpcHandlers() {
+  const requireMainFrame = event => {
+    if (!mainWindow || event.sender !== mainWindow.webContents || event.senderFrame !== mainWindow.webContents.mainFrame) throw Error('Updates require the application main frame');
+  };
+  ipcMain.handle('updates-info', event => { requireMainFrame(event); return updateService.info; });
+  ipcMain.handle('updates-check', event => { requireMainFrame(event); return updateService.check(); });
+  ipcMain.handle('updates-open', event => { requireMainFrame(event); return updateService.open(); });
+
   ipcMain.handle('open-cuponizze', () => shell.openExternal('https://cuponizze.com/')); 
   ipcMain.handle('phone-fit-screen', (_event, geometry) => {
     if (!mainWindow || isPiP || !geometry) return false;

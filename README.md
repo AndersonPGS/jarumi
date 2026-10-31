@@ -29,9 +29,17 @@ Baixe a versão mais recente em **[Releases](https://github.com/AndersonPGS/jaru
 - `Jarumi-<versão>-Setup-x64.exe`: instalador por usuário.
 - `Jarumi-<versão>-Portable-x64.exe`: executável sem instalação. Os dados continuam no perfil do usuário, não ao lado do executável.
 
-Não é necessário instalar Node.js, Java ou clonar o código para usar esses executáveis. Os executáveis são distribuídos sem assinatura digital; não há atualização automática. Não há suporte validado para macOS, Linux ou Windows ARM.
+Não é necessário instalar Node.js, Java ou clonar o código para usar esses executáveis. Os executáveis são distribuídos sem assinatura digital; a instalação de atualizações é manual. Não há suporte validado para macOS, Linux ou Windows ARM.
 
 Abra o aplicativo e use **Adicionar jogo**. Na primeira abertura de cada jogo, escolha uma resolução ou tente a detecção automática, teste e confirme. Sem metadados reconhecidos, o teste usa 240 × 320 e informa essa limitação. Altere depois pelo botão direito no jogo → Configurar tela do jogo.
+
+## Atualizações
+
+A partir da versão 1.0.3, o aplicativo desktop verifica as Releases estáveis do GitHub ao abrir e avisa quando há versão nova. Em **Configurações → Atualizações**, você pode consultar a versão instalada, verificar manualmente e desativar a verificação ao iniciar.
+
+**Baixar atualização** abre no navegador o Setup ou Portable correspondente ao aplicativo em uso. Feche o Jarumi antes de executar o instalador ou substituir o Portable. O aplicativo não baixa nem executa instaladores em segundo plano. Os dados do usuário continuam no perfil existente.
+
+Quem usa 1.0.2 ou anterior precisa baixar 1.0.3 uma vez para receber essa função. Falhas de rede não impedem jogar; a verificação pode ser tentada novamente pelo botão manual. A consulta pública à API do GitHub está sujeita aos limites do serviço. No modo de desenvolvimento não há consulta automática; no modo web, a função é exclusiva do aplicativo desktop.
 
 ## Recursos
 

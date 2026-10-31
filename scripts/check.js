@@ -1,5 +1,5 @@
 const fs=require('fs');const path=require('path');const cp=require('child_process');const {root,files}=require('./source-files');
-for(const name of files().filter(f=>f.endsWith('.js')&&!f.startsWith('libs/'))) {
+for(const name of files().filter(f=>(f.endsWith('.js')||f.endsWith('.cjs'))&&!f.startsWith('libs/'))) {
  const result=cp.spawnSync(process.execPath,['--check',path.join(root,name)],{encoding:'utf8'});
  if(result.status!==0){console.error(result.stderr);process.exit(1);}
 }

@@ -33,7 +33,7 @@ const JarumiUI = {
       const slot=el.querySelector('.launcher-icon');
       if(slot) slot.innerHTML=this.icon(icon); else el.innerHTML=this.icon(icon);
     }
-    for (const [view,icon] of Object.entries({controls:'controls',video:'screen',saves:'save',themes:'palette'})) {
+    for (const [view,icon] of Object.entries({updates:'load',controls:'controls',video:'screen',saves:'save',themes:'palette'})) {
       const el=document.querySelector(`[data-open-view="${view}"] > span`); if(el) el.innerHTML=this.icon(icon);
     }
     const folder=document.querySelector('#settings-open-folder > span'); if(folder) folder.innerHTML=this.icon('folder');
@@ -85,7 +85,7 @@ const JarumiUI = {
   },
   navigate(code) {
     const view=document.body.dataset.view;
-    if(code===-7 || code===-11) {App.switchTab(['controls','video','saves','themes','languages'].includes(view)?'settings':'library');return;}
+    if(code===-7 || code===-11) {App.switchTab(['controls','video','saves','themes','languages','updates'].includes(view)?'settings':'library');return;}
     const panel=document.querySelector('.view-panel.active');
     const buttons=[...panel.querySelectorAll('.launcher-app:not(.hidden), .launcher-game-open, .settings-link, .theme-choice')].filter(b=>b.getClientRects().length);
     if(!buttons.length)return;
