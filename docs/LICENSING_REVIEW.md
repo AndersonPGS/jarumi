@@ -26,3 +26,17 @@ Não se presume que um destinatário possa relicenciar código explicitamente GP
 4. Só então definir a licença do conjunto e atualizar o gate de publicação.
 
 O repositório GitHub foi criado privado para trabalho interno. Isso não constitui certificação dos direitos de redistribuição.
+
+## Auditoria adicional das fontes
+
+`RUNTIME_SOURCE_AUDIT.json` registra a busca na árvore completa (não truncada) do commit Rosabis identificado. Esse commit contém zero arquivos `.java`. Cada runtime local possui 39 classes `.class` em `org/recompile`, correspondentes a 12 caminhos `.java` distintos não encontrados nessa árvore.
+
+Isso não comprova infração nem ausência de fontes em outros repositórios. Demonstra que o upstream binário identificado não basta para demonstrar fontes correspondentes. Não foi atribuída autorização inexistente nem alterada a visibilidade com base apenas na declaração GPL do repositório.
+
+### Caminhos para resolver
+
+- Recuperar do mantenedor/upstream as fontes e revisões exatas usadas para compilar ambos os JARs, com scripts e licenças/exceções por componente; comparar os resultados com os binários distribuídos.
+- Ou substituir o runtime herdado por um runtime compilado de uma árvore de fontes com origem/licenciamento compatíveis demonstrados, executando novamente os testes de compatibilidade. Não presumir que remover somente as classes org/recompile basta: outras classes podem depender delas ou derivar das mesmas fontes.
+- Uma publicação inicial somente do launcher, sem motor/runtime de procedência pendente, é outro produto e exige reorganizar execução e distribuição; não representa um emulador completo pronto para download.
+
+O próximo insumo necessário para regularizar os binários atuais é a fonte/build original dos runtimes ou uma autorização/licença compatível verificável dos respectivos titulares. Uma mensagem de outro agente não substitui essa evidência.
