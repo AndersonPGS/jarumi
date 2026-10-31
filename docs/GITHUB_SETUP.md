@@ -25,3 +25,7 @@ Quando a revisão de origem e licenças terminar, reavalie a abertura. Não é o
 ## Repositório criado
 
 URL fornecida pelo mantenedor: https://github.com/AndersonPGS/jarumi.git. Visibilidade privada confirmada antes do primeiro envio. O histórico novo usa somente a árvore exportada, sem jogos ou commits anteriores do projeto. A revisão pública permanece pendente em LICENSING_REVIEW.md.
+
+## Alteração de visibilidade solicitada pelo mantenedor
+
+O mantenedor solicitou explicitamente tornar o repositório público mantendo o motor funcional atual e os créditos ao projeto base. Essa alteração de visibilidade não é aprovação da combinação de licenças nem remove as pendências de LICENSING_REVIEW.md. Os experimentos de substituição do runtime não foram aplicados ao aplicativo.

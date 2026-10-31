@@ -56,15 +56,21 @@ npm ci
 npm run dist:win
 ```
 
-O build executa checks, testes HTTP, integração nativa com main/preload reais e o mesmo teste contra o app.asar gerado antes de produzir os executáveis. Os arquivos ficam em `dist/`. `npm run pack` gera a pasta de aplicativo para inspeção. O empacotamento usa uma lista explícita de arquivos: jogos, saves, testes locais e cópias de jogos ficam fora. Os runtimes `java/classes.jar` e `java/classesold.jar` são necessários ao motor e não é um jogo.
+O build executa checks, testes HTTP, integração nativa com main/preload reais e o mesmo teste contra o app.asar gerado antes de produzir os executáveis. Os arquivos ficam em `dist/`. `npm run pack` gera a pasta de aplicativo para inspeção. O empacotamento usa uma lista explícita de arquivos: jogos, saves, testes locais e cópias de jogos ficam fora. Os runtimes `java/classes.jar` e `java/classesold.jar` são necessários ao motor e não são jogos.
 
-A publicação pública ainda aguarda a revisão dos componentes herdados. Consulte [a preparação do GitHub](docs/GITHUB_SETUP.md) e `npm run release:check`.
+A revisão das licenças e fontes correspondentes dos componentes herdados continua pendente. Consulte [a revisão de licenciamento](docs/LICENSING_REVIEW.md) e `npm run release:check`. A disponibilidade pública do repositório não encerra essa revisão.
 
 Leia [o processo de release](docs/RELEASING.md) antes de distribuir. Leia também [as pendências da revisão](docs/PRODUCTION_REVIEW.md). Gerar um binário não significa que a distribuição pública está aprovada.
 
 ## Traduções e contribuições
 
 Edite `locales/{pt-BR,en,es}.json` e rode `npm run build:locales`. Preserve as mesmas chaves e parâmetros nos três idiomas. Consulte [CONTRIBUTING.md](CONTRIBUTING.md). Relate problemas com versão do aplicativo, sistema e passos para reproduzir, sem anexar jogos ou dados pessoais.
+
+## Projeto base e créditos
+
+O motor de execução Java ME e os runtimes usados pelo Jarumi vêm da versão web de [Rosabis/J2meJS](https://github.com/Rosabis/J2meJS), baseada no [Mozilla PluotSorbet](https://github.com/mozilla/pluotsorbet). O commit de referência e as comparações de arquivos estão registrados em [UPSTREAM_EVIDENCE.json](docs/UPSTREAM_EVIDENCE.json).
+
+O Jarumi desenvolve sua experiência desktop sobre essa base: launcher, interface de celular em pixel art, temas, idiomas, favoritos, recentes, configuração de tela por jogo, integração Electron/PiP e fluxo de distribuição. Também inclui correções locais no motor, documentadas nos [patches em relação ao upstream](docs/upstream-patches). Bibliotecas de áudio, fontes, estilos e demais componentes de terceiros conservam suas atribuições; não são apresentados como criação original do Jarumi.
 
 ## Licenças e origem
 
