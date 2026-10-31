@@ -6,6 +6,18 @@ Emulador desktop de aplicativos Java ME (.jar), com interface de celular em pixe
 
 **Nenhum jogo é distribuído com o Jarumi.** Importe apenas arquivos que você tenha autorização para utilizar. Compatibilidade varia por jogo e versão do JAR.
 
+## Screenshots
+
+Capturas da interface atual com biblioteca vazia, sem jogos ou dados pessoais.
+
+| Launcher · tema claro | Launcher · tema escuro |
+| :---: | :---: |
+| <img src="docs/screenshots/launcher-light.png" width="300" alt="Launcher do Jarumi com carcaça clara e teclado numérico"> | <img src="docs/screenshots/launcher-dark.png" width="300" alt="Launcher do Jarumi com carcaça escura e teclado numérico"> |
+
+| Configurações | Aparência |
+| :---: | :---: |
+| <img src="docs/screenshots/settings.png" width="300" alt="Tela de configurações com controles, tela, progresso e idiomas"> | <img src="docs/screenshots/themes.png" width="300" alt="Seletor dos temas disponíveis no Jarumi"> |
+
 ## Usar no Windows
 
 Quando uma versão for publicada, os downloads ficarão na seção **Releases** deste repositório:
